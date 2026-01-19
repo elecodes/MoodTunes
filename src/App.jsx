@@ -219,6 +219,9 @@ export default function App() {
           )}
         </aside>
       </main>
+      <footer style={{ textAlign: "center", padding: "1rem", marginTop: "2rem" }}>
+        <p>&copy; 2024 MoodTunes</p>
+      </footer>
     </div>
   );
 }
