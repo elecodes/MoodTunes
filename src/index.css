@@ -19,7 +19,7 @@ main {
   margin-top: 0.5rem;
 }
 h2 {
-  color: black;
+  /* color: black;  -- Removing this to allow Dark Mode override */
 }
 
 .layout {
@@ -30,13 +30,11 @@ h2 {
 }
 
 .songs {
-  background: #f9f9f9;
   padding: 1rem;
   border-radius: 6px;
 }
 
 .favorites {
-  background: #fffdf5;
   padding: 1rem;
   border-radius: 6px;
   border-left: 2px solid #ddd;

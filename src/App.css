@@ -1,29 +1,106 @@
+/* Variables Globales (Comunes) */
 :root {
-  --bg-color: #f4f6f8; /* Softer light background */
-  --text-color: #333333;
-  --header-bg: #ffffff;
-  --border-color: #e0e0e0;
-  --card-bg: #ffffff;
-  --primary-color: #3355aa;
-  --secondary-color: #f0f4ff;
-  --navbar-bg: #222222;
-  --navbar-text: #ffffff;
-  --input-bg: #ffffff;
-  --button-text: #ffffff;
+  --brand-accent: #9D27FF;        /* Violeta principal */
+  --brand-status: #A855F7;        /* Texto de estado */
+  --success-play: #10B981;        /* Verde para éxito/reproducción */
+  --gradient-banner: linear-gradient(135deg, #6366F1 0%, #EC4899 100%);
 }
 
-/* --- Toggle Switch Styles --- */
+/* 1. Default (Light Mode) */
+:root {
+  --bg-main: #F1F5F9;             
+  --bg-surface: #FFFFFF;          
+  --bg-header: #FFFFFF;           
+  --bg-card: #FFFFFF;             
+  --text-primary: #0F172A;        
+  --text-secondary: #64748B;
+  --border-color: #E2E8F0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+
+  --navbar-bg: var(--bg-header);
+  --navbar-text: var(--text-primary);
+  --input-bg: var(--bg-surface);
+}
+
+/* 2. System Dark Mode Preference */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-main: #0B0A12;           
+    --bg-surface: #1E1B2E;        
+    --bg-header: #383355;         /* Significantly Lighter Purple for Header */
+    --bg-card: #0F0C18;           /* Near Black for Cards */
+    
+    --text-primary: #EDE9FE;      
+    --text-secondary: #94A3B8;
+    --border-color: #2D2A37;
+    --shadow-sm: 0 4px 6px rgba(0,0,0,0.4);
+
+    --navbar-bg: var(--bg-header);
+    --navbar-text: var(--text-primary);
+    --input-bg: #1E1B2E;
+  }
+}
+
+/* 3. Forced Overrides */
+[data-theme='dark'] {
+  --bg-main: #0B0A12;
+  --bg-surface: #1E1B2E;
+  --bg-header: #383355;           /* Significantly Lighter Purple for Header */
+  --bg-card: #0F0C18;             /* Near Black for Cards */
+  
+  --text-primary: #EDE9FE;
+  --text-secondary: #94A3B8;
+  --border-color: #2D2A37;
+  --shadow-sm: 0 4px 6px rgba(0,0,0,0.4);
+
+  --navbar-bg: var(--bg-header);
+  --navbar-text: var(--text-primary);
+  --input-bg: #1E1B2E;
+}
+
+[data-theme='light'] {
+  --bg-main: #F1F5F9;
+  --bg-surface: #FFFFFF;
+  --bg-header: #FFFFFF;
+  --bg-card: #FFFFFF;
+  
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
+  --border-color: #E2E8F0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+
+  --navbar-bg: var(--bg-header);
+  --navbar-text: var(--text-primary);
+  --input-bg: var(--bg-surface);
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* --- Toggle Switch Styling (Fixed) --- */
 .theme-switch {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 30px;
+  width: 52px;
+  height: 26px;
+  margin-left: 10px;
+  z-index: 10; /* Ensure label is above context? */
 }
 
+/* Hide default checkbox completely - Aggressive */
 .theme-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  position: absolute;
+  z-index: -9999;
+  appearance: none; /* Standard */
+  -webkit-appearance: none; /* Safari/Chrome */
+  pointer-events: none; /* Ensure no interaction catches on the invis input if overlaying */
 }
 
 .slider {
@@ -33,63 +110,52 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
+  background-color: #CBD5E1; 
   transition: .4s;
   border-radius: 34px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 5px;
+  padding: 0 6px;
+  border: 1px solid var(--border-color);
 }
+
+/* Icons inside slider */
+.slider .icon-moon, .slider .icon-sun {
+  font-size: 12px;
+  line-height: 1;
+  z-index: 10;
+  transition: opacity 0.3s;
+}
+
+.slider .icon-moon { opacity: 0; }
+.slider .icon-sun { opacity: 1; color: #F59E0B; } 
+
+input:checked + .slider {
+  background-color: var(--bg-surface); 
+  border-color: var(--brand-accent);
+}
+
+input:checked + .slider .icon-moon { opacity: 1; color: #FFFFFF; }
+input:checked + .slider .icon-sun { opacity: 0; }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 22px;
-  width: 22px;
-  left: 4px;
-  bottom: 4px;
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 2px;
   background-color: white;
-  -webkit-transition: .4s;
   transition: .4s;
   border-radius: 50%;
-  z-index: 2;
-}
-
-input:checked + .slider {
-  background-color: var(--primary-color);
+  z-index: 20;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(30px);
-  -ms-transform: translateX(30px);
-  transform: translateX(30px);
-}
-
-.icon-sun, .icon-moon {
-  font-size: 14px;
-  z-index: 1;
-}
-
-.dark-mode {
-  --bg-color: #121212;
-  --text-color: #e0e0e0;
-  --header-bg: #1e1e1e;
-  --border-color: #333333;
-  --card-bg: #242424;
-  --primary-color: #4da6ff;
-  --secondary-color: #1a1a1a;
-  --navbar-bg: #000000;
-  --navbar-text: #e0e0e0;
-  --input-bg: #2c2c2c;
-  --button-text: #ffffff;
-}
-
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  transition: background-color 0.3s, color 0.3s;
+  transform: translateX(24px);
+  background-color: var(--brand-accent); 
 }
 
 /* --- Header fijo --- */
@@ -97,9 +163,11 @@ header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: var(--header-bg);
+  background: var(--navbar-bg); /* Now uses specific header var */
   padding: 10px;
   border-bottom: 2px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.3s;
 }
 
 /* --- Layout principal --- */
@@ -110,6 +178,7 @@ main {
   height: 100vh; /* que ocupe toda la ventana */
   overflow: hidden; /* evita scroll general */
   margin-top: 10px;
+  background-color: var(--bg-main); /* Explicitly set main bg */
 }
 
 /* --- Panel canciones --- */
@@ -118,6 +187,7 @@ main {
   overflow-y: auto; /* scroll interno */
   padding-right: 5px;
   box-sizing: border-box;
+  /* Remove border left if not needed, or update color */
 }
 
 /* --- Panel favoritos --- */
@@ -126,7 +196,8 @@ main {
   overflow-y: auto; /* scroll interno */
   padding-right: 5px;
   box-sizing: border-box;
-  border-left: 2px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
+  background: var(--bg-main); /* Ensure it matches main or surface? */
 }
 
 /* --- Rejilla de canciones --- */
@@ -145,12 +216,18 @@ main {
 
 /* --- Estilos de las cards --- */
 .card {
-  background: var(--card-bg);
+  background: var(--bg-card); /* Use new card var */
   border-radius: 8px;
   padding: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   text-align: center;
-  color: var(--text-color);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color); /* Add border for definition */
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
 }
 
 .card img {
@@ -165,7 +242,7 @@ main {
   margin-top: 6px;
 }
 
-/* --- Navbar fijo --- */
+/* --- Navbar fijo (Legacy class override if still used, but main header is now header tag) --- */
 .navbar {
   position: fixed;
   top: 0;
@@ -200,33 +277,33 @@ main {
   border-radius: 30px;
   border: 1px solid var(--border-color);
   background: var(--input-bg);
-  color: var(--text-color);
+  color: var(--text-primary);
   font-size: 1rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s;
 }
 
 .search-bar input:focus {
   outline: none;
-  border-color: #3355aa;
-  box-shadow: 0 2px 8px rgba(51, 85, 170, 0.2);
+  border-color: var(--brand-accent);
+  box-shadow: 0 0 0 2px var(--brand-accent);
 }
 
 .search-bar button {
   padding: 12px 24px;
   border-radius: 30px;
-  background: var(--primary-color);
-  color: var(--button-text);
+  background: var(--brand-accent);
+  color: #fff;
   border: none;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-sm);
   transition: background 0.2s;
 }
 
 .search-bar button:hover {
-  background: #224499;
+  background: var(--brand-status);
 }
 .navbar-links {
   list-style: none;
@@ -243,7 +320,7 @@ main {
 }
 
 .navbar-links li a:hover {
-  color: var(--primary-color);
+  color: var(--brand-accent);
 }
 
 /* --- Paginación --- */
@@ -256,42 +333,48 @@ main {
 }
 
 .pagination button {
-  background-color: #444;
-  color: white;
-  border: none;
+  background-color: var(--bg-secondary-btn); /* Updated to use new var */
+  color: var(--text-primary); /* Dark text on light button in light mode? */
+  border: 1px solid var(--border-color);
   padding: 6px 12px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
+[data-theme='dark'] .pagination button {
+    color: #fff; /* Ensure visible in dark mode */
+}
+
+
 .pagination button:disabled {
-  background-color: #777;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .pagination span {
   font-size: 0.9rem;
-  color: #ddd;
+  color: var(--text-secondary);
 }
 
 /* --- MOOD ASSISTANT STYLES --- */
 .mood-assistant {
-  background: #f0f4ff;
+  background: var(--bg-surface);
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
-  border: 1px solid #cce0ff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .mood-assistant h3 {
   margin-top: 0;
-  color: #3355aa;
+  color: var(--brand-accent);
 }
 
 .chat {
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 10px;
   height: 200px;
@@ -311,13 +394,14 @@ main {
 }
 
 .msg.agent {
-  background: #e6f0ff;
+  background: var(--bg-main); /* Contrast against card */
   align-self: flex-start;
   border-bottom-left-radius: 2px;
+  color: var(--text-primary);
 }
 
 .msg.user {
-  background: #3355aa;
+  background: var(--brand-accent);
   color: white;
   align-self: flex-end;
   border-bottom-right-radius: 2px;
@@ -331,13 +415,15 @@ main {
 .input-row input {
   flex: 1;
   padding: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
+  background: var(--input-bg);
+  color: var(--text-primary);
 }
 
 .input-row button {
   padding: 8px 16px;
-  background: #3355aa;
+  background: var(--brand-accent);
   color: white;
   border: none;
   border-radius: 4px;
@@ -345,11 +431,11 @@ main {
 }
 
 .input-row button:disabled {
-  background: #99aacc;
+  background: var(--border-color);
 }
 
 .ended {
-  color: #666;
+  color: var(--text-secondary);
   font-style: italic;
   text-align: center;
 }

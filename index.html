@@ -2,27 +2,22 @@
 <html lang="en">
 
 <head>
+  <style>
+    /* Force Voiceflow Widget to Top Right */
+    #voiceflow-chat {
+      bottom: auto !important;
+      top: 90px !important;
+      /* Below the 60px header + padding */
+      right: 20px !important;
+      left: auto !important;
+    }
+  </style>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self' https://cdn.voiceflow.com https://*.voiceflow.com 'unsafe-inline'; connect-src 'self' https://itunes.apple.com https://*.voiceflow.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://cdn.voiceflow.com; frame-src 'self' https://*.voiceflow.com; media-src 'self' https://*.mzstatic.com;">
   <title>MoodTunes</title>
-  <link rel="stylesheet" href="App.css" />
-
-</head>
-
-<body>
-  <!-- 🔹 Navbar fijo -->
-  <nav class="navbar">
-    <div class="navbar-brand">🎵 MoodTunes</div>
-    <ul class="navbar-links">
-      <li><a href="#">Home</a></li>
-      <li><a href="#">Songs</a></li>
-      <li><a href="#">Favorites</a></li>
-      <li><a href="#">About</a></li>
-    </ul>
-  </nav>
 
   <!-- 🔹 Contenedor React -->
   <div id="root"></div>
@@ -71,6 +66,6 @@
       v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
     })(document, 'script');
   </script>
-</body>
+  </body>
 
 </html>
