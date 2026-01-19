@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Buda:wght@400&display=swap');
+
 .app {
-  font-family: Arial, sans-serif;
+  font-family: 'Buda', serif;
   padding: 1rem;
 }
 
@@ -18,9 +20,7 @@ main {
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
-h2 {
-  /* color: black;  -- Removing this to allow Dark Mode override */
-}
+
 
 .layout {
   display: grid;

@@ -25,12 +25,12 @@
 /* 2. System Dark Mode Preference */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-main: #0B0A12;           
+    --bg-main: linear-gradient(180deg, rgba(33, 31, 46, 0.95) 0%, rgba(15, 12, 24, 0.95) 100%);
     --bg-surface: #1E1B2E;        
-    --bg-header: #383355;         /* Significantly Lighter Purple for Header */
+    --bg-header: linear-gradient(90deg, rgba(56, 51, 85, 0.9) 0%, rgba(33, 31, 46, 0.9) 100%); /* Purple Gradient + Opacity */
     --bg-card: #0F0C18;           /* Near Black for Cards */
     
-    --text-primary: #EDE9FE;      
+    --text-primary: #d8d5e6;      
     --text-secondary: #94A3B8;
     --border-color: #2D2A37;
     --shadow-sm: 0 4px 6px rgba(0,0,0,0.4);
@@ -43,12 +43,12 @@
 
 /* 3. Forced Overrides */
 [data-theme='dark'] {
-  --bg-main: #0B0A12;
+  --bg-main: linear-gradient(180deg, rgba(33, 31, 46, 0.95) 0%, rgba(15, 12, 24, 0.95) 100%);
   --bg-surface: #1E1B2E;
-  --bg-header: #383355;           /* Significantly Lighter Purple for Header */
+  --bg-header: linear-gradient(90deg, rgba(56, 51, 85, 0.9) 0%, rgba(33, 31, 46, 0.9) 100%); /* Purple Gradient + Opacity */
   --bg-card: #0F0C18;             /* Near Black for Cards */
   
-  --text-primary: #EDE9FE;
+  --text-primary: #d8d5e6;
   --text-secondary: #94A3B8;
   --border-color: #2D2A37;
   --shadow-sm: 0 4px 6px rgba(0,0,0,0.4);
@@ -75,9 +75,9 @@
 }
 
 body {
-  background-color: var(--bg-main);
+  background: var(--bg-main);
   color: var(--text-primary);
-  transition: background-color 0.3s, color 0.3s;
+  transition: background 0.3s, color 0.3s;
 }
 
 /* --- Toggle Switch Styling (Fixed) --- */
@@ -164,6 +164,8 @@ header {
   top: 0;
   z-index: 1000;
   background: var(--navbar-bg); /* Now uses specific header var */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: 10px;
   border-bottom: 2px solid var(--border-color);
   box-shadow: var(--shadow-sm);
@@ -178,7 +180,7 @@ main {
   height: 100vh; /* que ocupe toda la ventana */
   overflow: hidden; /* evita scroll general */
   margin-top: 10px;
-  background-color: var(--bg-main); /* Explicitly set main bg */
+  background: var(--bg-main); /* Explicitly set main bg */
 }
 
 /* --- Panel canciones --- */
