@@ -1,69 +1,46 @@
-# 🎵 Music App
+# 🎵 MoodTunes
 
-Aplicación de música con React que permite buscar canciones usando la API de iTunes, escucharlas en preview, añadirlas a favoritos y gestionar la lista con paginación y almacenamiento en localStorage.
+**MoodTunes** is a React-based music discovery application integrated with a powerful **Voiceflow AI Agent**.
 
----
+Users can discover music either by searching manually or by chatting with the AI agent, which understands moods and suggests personalized playlists.
 
-## 🚀 Funcionalidades
+## Features
 
-- 🔍 **Búsqueda de canciones** por artista o título usando la API pública de iTunes.
-- 🎶 **Reproductor de audio** integrado (preview de 30s).
-- ⭐ **Lista de favoritos**:
-  - Guardada en **LocalStorage** para persistencia.
-  - Posibilidad de añadir y quitar canciones.
-  - Vista en **sidebar** con paginación independiente.
-- 🖼️ **Vista en grid con carátulas**.
-- 📱 **Responsive**:
-  - En móvil: favoritos aside.
-  - En escritorio: favoritos como columna lateral estrecha.
-- 📑 **Paginación**:
-  - Resultados de canciones.
-  - Favoritos.
+-   **AI Mood Assistant**: Chat with the integrated Voiceflow agent (powered by LLMs) to get music recommendations based on how you feel.
+-   **Smart Integration**: When the agent suggests songs, they automatically appear in the app's result list for instant playback.
+-   **iTunes API**: Real-time music search and 30-second previews.
+-   **Favorites**: Save your favorite tracks locally.
+-   **Responsive Design**: A clean, modern UI that works on desktop and mobile.
 
----
+## Technology Stack
 
-## 🛠️ Tecnologías
+-   **Frontend**: React, Vite
+-   **AI**: Voiceflow (Official Widget + Custom Bridge)
+-   **API**: iTunes Search API
+-   **Styling**: Pure CSS
 
-- [React](https://react.dev/) con Hooks (`useState`, `useEffect`)
-- API pública de [iTunes Search](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/index.html)
-- CSS Grid + Flexbox
+## Getting Started
 
----
+1.  **Install Dependencies**:
+    ```bash
+    npm install
+    ```
 
-## 📂 Estructura del proyecto
+2.  **Run Development Server**:
+    ```bash
+    npm run dev
+    ```
 
-📦 music-app
-┣ 📂 src
-┃ ┣ 📜 App.jsx
-┃ ┣ 📜 App.css
-┃ ┗ 📜 index.jsx
-┣ 📜 package.json
-┣ 📜 README.md
-┣ 📜 .gitignore
-┗ 📜 vite.config.js (si usas Vite)
+3.  **Open in Browser**:
+    Navigate to `http://localhost:5173`.
 
----
+## Voiceflow Integration
 
-## ▶️ Ejecución local
+The app uses the **official Voiceflow Widget** with a custom "Bridge" extension.
+-   **Agent**: Sends a hidden `search_terms` payload with suggested songs.
+-   **Widget Extension**: Intercepts this payload in `index.html`.
+-   **App Bridge**: Passing the data to `window.handleVoiceflowMusic`, triggering the main app's search function.
 
-1. Clona este repositorio:
+## License
 
-   ```bash
-   git clone https://github.com/tuusuario/music-app.git
-   cd music-app
-   ```
-
-   Abre el archivo index.html en tu navegador.
-   (no necesita servidor, pero si usas módulos ES6, abre con Live Server en VSCode o similar)
-
-📦 Build
-
-Este proyecto no requiere build, basta con abrir el index.html.
-
-📸 Vista previa
-<img width="1593" height="1484" alt="image" src="https://github.com/user-attachments/assets/70543cad-7776-4eb7-ac5e-1c80378a31f9" />
-
-
-📜 Licencia
-
-MIT © 2025
+MIT

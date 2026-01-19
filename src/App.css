@@ -15,7 +15,7 @@ main {
   gap: 15px;
   height: 100vh; /* que ocupe toda la ventana */
   overflow: hidden; /* evita scroll general */
-  margin-top: 70px; /* espacio para el navbar */
+  margin-top: 10px;
 }
 
 /* --- Panel canciones --- */
@@ -91,6 +91,46 @@ main {
   font-weight: bold;
 }
 
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin: 1rem auto;
+  max-width: 600px;
+  width: 100%;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 30px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #3355aa;
+  box-shadow: 0 2px 8px rgba(51, 85, 170, 0.2);
+}
+
+.search-bar button {
+  padding: 12px 24px;
+  border-radius: 30px;
+  background: #3355aa;
+  color: white;
+  border: none;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: background 0.2s;
+}
+
+.search-bar button:hover {
+  background: #224499;
+}
 .navbar-links {
   list-style: none;
   display: flex;
@@ -137,16 +177,85 @@ main {
   color: #ddd;
 }
 
-/* --- Vista escritorio --- 
-@media (min-width: 900px) {
-  main {
-    grid-template-columns: 3fr 1fr; /* canciones más anchas 
-  }
+/* --- MOOD ASSISTANT STYLES --- */
+.mood-assistant {
+  background: #f0f4ff;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #cce0ff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
 
-  .favorites .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}*/
+.mood-assistant h3 {
+  margin-top: 0;
+  color: #3355aa;
+}
+
+.chat {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  height: 200px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.msg {
+  padding: 6px 10px;
+  border-radius: 12px;
+  max-width: 80%;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.msg.agent {
+  background: #e6f0ff;
+  align-self: flex-start;
+  border-bottom-left-radius: 2px;
+}
+
+.msg.user {
+  background: #3355aa;
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 2px;
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.input-row input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.input-row button {
+  padding: 8px 16px;
+  background: #3355aa;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.input-row button:disabled {
+  background: #99aacc;
+}
+
+.ended {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+}
 
 @media (max-width: 600px) {
   .songs .grid {

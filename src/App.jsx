@@ -1,41 +1,39 @@
 import "./App.css";
-
 import { useState, useEffect } from "react";
+// import MoodAssistant from "./components/MoodAssistant";
 
 // --- Componente principal ---
 export default function App() {
   const [songs, setSongs] = useState([]); // canciones buscadas
   const [favorites, setFavorites] = useState([]); // lista de favoritos
-  const [search, setSearch] = useState(""); // búsqueda actual
+  const [search, setSearch] = useState(""); // búsqueda manual
 
   // 🔹 Estado de paginación
   const [page, setPage] = useState(1);
-  const perPage = 12; // canciones por página
+  const perPage = 12;
   const start = (page - 1) * perPage;
   const end = start + perPage;
   const paginatedSongs = songs.slice(start, end);
 
   // 🔹 Estado de paginación favoritos
   const [favPage, setFavPage] = useState(1);
-  const favPerPage = 6; // favoritos por página
+  const favPerPage = 6;
   const favStart = (favPage - 1) * favPerPage;
   const favEnd = favStart + favPerPage;
   const favPaginated = favorites.slice(favStart, favEnd);
 
-  // --- Cargar favoritos desde localStorage al montar ---
+  // --- Cargar favoritos ---
   useEffect(() => {
     const stored = localStorage.getItem("favorites");
-    if (stored) {
-      setFavorites(JSON.parse(stored));
-    }
+    if (stored) setFavorites(JSON.parse(stored));
   }, []);
 
-  // --- Guardar favoritos cada vez que cambian ---
+  // --- Guardar favoritos ---
   useEffect(() => {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   }, [favorites]);
 
-  // --- Buscar canciones en iTunes ---
+  // --- Buscar canciones en iTunes (manual o desde el agent) ---
   async function fetchSongs(query) {
     if (!query.trim()) return;
 
@@ -44,6 +42,7 @@ export default function App() {
         query
       )}&media=music&entity=song&limit=50`
     );
+
     const data = await res.json();
 
     const results = data.results.map((track) => ({
@@ -56,56 +55,105 @@ export default function App() {
     }));
 
     setSongs(results);
-    setPage(1); // resetear a página 1
+    setPage(1);
   }
 
-  // --- Añadir/Quitar favoritos ---
+  // --- Recibir canciones desde Voiceflow ---
+  async function handleAgentSongs(agentSongs) {
+    if (typeof agentSongs === 'string') {
+        fetchSongs(agentSongs);
+        return;
+    }
+    
+    if (!Array.isArray(agentSongs)) {
+        console.error("Invalid song format from agent:", agentSongs);
+        return;
+    }
+
+    // agentSongs = [{ title, artist }]
+    const searches = await Promise.all(
+      agentSongs.map((s) => fetchItunesTrack(s.title, s.artist))
+    );
+
+    setSongs(searches.filter(Boolean));
+    setPage(1);
+  }
+
+  // 🔹 Bridge for Voiceflow Widget
+  useEffect(() => {
+    window.handleVoiceflowMusic = handleAgentSongs;
+    return () => {
+      delete window.handleVoiceflowMusic;
+    };
+  }, []);
+
+  async function fetchItunesTrack(title, artist) {
+    const term = encodeURIComponent(`${title} ${artist}`);
+    const res = await fetch(
+      `https://itunes.apple.com/search?term=${term}&entity=song&limit=1`
+    );
+    const data = await res.json();
+    const track = data.results[0];
+    if (!track) return null;
+
+    return {
+      id: track.trackId,
+      title: track.trackName,
+      author: track.artistName,
+      style: track.primaryGenreName || "Unknown",
+      cover: track.artworkUrl100,
+      preview: track.previewUrl,
+    };
+  }
+
+  // --- Añadir / quitar favoritos ---
   function toggleFavorite(song) {
     const exists = favorites.find((f) => f.id === song.id);
     if (exists) {
       setFavorites(favorites.filter((f) => f.id !== song.id));
     } else {
       setFavorites([...favorites, song]);
-      setFavPage(1); // resetear a página 1 en favoritos
+      setFavPage(1);
     }
   }
 
   return (
     <div className="app">
-      {/* --- Barra de búsqueda --- */}
       <header>
-        <h1>🎵 Music App</h1>
+        <h1>🎵 MoodTunes</h1>
+
+        {/* 🔹 AGENTE DE MOOD -- REPLACED BY WIDGET */}
+        {/* <MoodAssistant onSongsReceived={handleAgentSongs} /> */}
+
+        {/* 🔹 BÚSQUEDA MANUAL */}
         <div className="search-bar">
           <input
             type="text"
-            placeholder="Buscar artistas o canciones..."
+            placeholder="Search artists or songs..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && fetchSongs(search)}
           />
-          <button onClick={() => fetchSongs(search)}>Buscar</button>
+          <button onClick={() => fetchSongs(search)}>Search</button>
         </div>
       </header>
 
       <main>
-        {/* --- Lista de canciones --- */}
+        {/* --- Resultados --- */}
         <section className="songs">
-          <h2>Resultados</h2>
+          <h2>Results</h2>
           <div className="grid">
-            {paginatedSongs.length === 0 && <p>No hay resultados.</p>}
+            {paginatedSongs.length === 0 && <p>No results found.</p>}
             {paginatedSongs.map((song) => (
               <div key={song.id} className="card">
                 <img src={song.cover} alt={song.title} />
                 <h3>{song.title}</h3>
                 <p>{song.author}</p>
                 <p className="style">{song.style}</p>
-                {song.preview && (
-                  <audio controls src={song.preview}>
-                    Tu navegador no soporta audio.
-                  </audio>
-                )}
+                {song.preview && <audio controls src={song.preview} />}
                 <button onClick={() => toggleFavorite(song)}>
                   {favorites.find((f) => f.id === song.id)
-                    ? "⭐ Quitar"
+                    ? "⭐ Remove"
                     : "☆ Fav"}
                 </button>
               </div>
@@ -116,16 +164,16 @@ export default function App() {
           {songs.length > perPage && (
             <div className="pagination">
               <button disabled={page === 1} onClick={() => setPage(page - 1)}>
-                ⬅️ Anterior
+                ⬅️ Previous
               </button>
               <span>
-                Página {page} de {Math.ceil(songs.length / perPage)}
+                Page {page} of {Math.ceil(songs.length / perPage)}
               </span>
               <button
                 disabled={page === Math.ceil(songs.length / perPage)}
                 onClick={() => setPage(page + 1)}
               >
-                Siguiente ➡️
+                Next ➡️
               </button>
             </div>
           )}
@@ -133,39 +181,39 @@ export default function App() {
 
         {/* --- Favoritos --- */}
         <aside className="favorites">
-          <h2>⭐ Favoritos</h2>
-          {favorites.length === 0 && <p>No tienes favoritos aún.</p>}
+          <h2>⭐ Favorites</h2>
+          {favorites.length === 0 && <p>No favorites yet.</p>}
           <div className="grid">
             {favPaginated.map((song) => (
               <div key={song.id} className="card">
                 <img src={song.cover} alt={song.title} />
                 <h3>{song.title}</h3>
                 <p>{song.author}</p>
-                {song.preview && <audio controls src={song.preview}></audio>}
+                {song.preview && <audio controls src={song.preview} />}
                 <button onClick={() => toggleFavorite(song)}>
-                  ❌ Eliminar
+                  ❌ Remove
                 </button>
               </div>
             ))}
           </div>
 
-          {/* --- Paginación favoritos --- */}
+          {/* --- Favorites Pagination --- */}
           {favorites.length > favPerPage && (
             <div className="pagination">
               <button
                 disabled={favPage === 1}
                 onClick={() => setFavPage(favPage - 1)}
               >
-                ⬅️ Anterior
+                ⬅️ Previous
               </button>
               <span>
-                Página {favPage} de {Math.ceil(favorites.length / favPerPage)}
+                Page {favPage} of {Math.ceil(favorites.length / favPerPage)}
               </span>
               <button
                 disabled={favPage === Math.ceil(favorites.length / favPerPage)}
                 onClick={() => setFavPage(favPage + 1)}
               >
-                Siguiente ➡️
+                Next ➡️
               </button>
             </div>
           )}
