@@ -1,11 +1,105 @@
+:root {
+  --bg-color: #f4f6f8; /* Softer light background */
+  --text-color: #333333;
+  --header-bg: #ffffff;
+  --border-color: #e0e0e0;
+  --card-bg: #ffffff;
+  --primary-color: #3355aa;
+  --secondary-color: #f0f4ff;
+  --navbar-bg: #222222;
+  --navbar-text: #ffffff;
+  --input-bg: #ffffff;
+  --button-text: #ffffff;
+}
+
+/* --- Toggle Switch Styles --- */
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+}
+
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(30px);
+  -ms-transform: translateX(30px);
+  transform: translateX(30px);
+}
+
+.icon-sun, .icon-moon {
+  font-size: 14px;
+  z-index: 1;
+}
+
+.dark-mode {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --header-bg: #1e1e1e;
+  --border-color: #333333;
+  --card-bg: #242424;
+  --primary-color: #4da6ff;
+  --secondary-color: #1a1a1a;
+  --navbar-bg: #000000;
+  --navbar-text: #e0e0e0;
+  --input-bg: #2c2c2c;
+  --button-text: #ffffff;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
 /* --- Header fijo --- */
 header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: #fff;
+  background: var(--header-bg);
   padding: 10px;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid var(--border-color);
 }
 
 /* --- Layout principal --- */
@@ -32,7 +126,7 @@ main {
   overflow-y: auto; /* scroll interno */
   padding-right: 5px;
   box-sizing: border-box;
-  border-left: 2px solid #ddd;
+  border-left: 2px solid var(--border-color);
 }
 
 /* --- Rejilla de canciones --- */
@@ -51,11 +145,12 @@ main {
 
 /* --- Estilos de las cards --- */
 .card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
+  color: var(--text-color);
 }
 
 .card img {
@@ -77,8 +172,8 @@ main {
   left: 0;
   right: 0;
   height: 60px;
-  background-color: #222;
-  color: white;
+  background-color: var(--navbar-bg);
+  color: var(--navbar-text);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -103,7 +198,9 @@ main {
   flex: 1;
   padding: 12px 20px;
   border-radius: 30px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-color);
   font-size: 1rem;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
   transition: all 0.2s;
@@ -118,8 +215,8 @@ main {
 .search-bar button {
   padding: 12px 24px;
   border-radius: 30px;
-  background: #3355aa;
-  color: white;
+  background: var(--primary-color);
+  color: var(--button-text);
   border: none;
   font-size: 1rem;
   font-weight: bold;
@@ -146,7 +243,7 @@ main {
 }
 
 .navbar-links li a:hover {
-  color: #ffcc00;
+  color: var(--primary-color);
 }
 
 /* --- Paginación --- */

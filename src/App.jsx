@@ -7,6 +7,20 @@ export default function App() {
   const [songs, setSongs] = useState([]); // canciones buscadas
   const [favorites, setFavorites] = useState([]); // lista de favoritos
   const [search, setSearch] = useState(""); // búsqueda manual
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  // --- Dark Mode Effect ---
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add("dark-mode");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.classList.remove("dark-mode");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
 
   // 🔹 Estado de paginación
   const [page, setPage] = useState(1);
@@ -138,6 +152,19 @@ export default function App() {
           />
           <button onClick={() => fetchSongs(search)}>Search</button>
         </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <label className="theme-switch">
+              <input 
+                type="checkbox" 
+                checked={darkMode} 
+                onChange={() => setDarkMode(!darkMode)} 
+              />
+              <span className="slider">
+                <span className="icon-moon">🌙</span>
+                <span className="icon-sun">☀️</span>
+              </span>
+            </label>
+          </div>
       </header>
 
       <main>
