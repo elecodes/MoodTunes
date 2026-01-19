@@ -35,11 +35,13 @@ export default function App() {
 
   // --- Buscar canciones en iTunes (manual o desde el agent) ---
   async function fetchSongs(query) {
-    if (!query.trim()) return;
+    if (typeof query !== 'string') return;
+    const sanitizedQuery = query.trim().slice(0, 100);
+    if (!sanitizedQuery) return;
 
     const res = await fetch(
       `https://itunes.apple.com/search?term=${encodeURIComponent(
-        query
+        sanitizedQuery
       )}&media=music&entity=song&limit=50`
     );
 
