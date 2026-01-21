@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import logo from "./assets/logo.png";
 // import MoodAssistant from "./components/MoodAssistant";
 
@@ -8,6 +8,8 @@ export default function App() {
   const [songs, setSongs] = useState([]); // canciones buscadas
   const [favorites, setFavorites] = useState([]); // lista de favoritos
   const [search, setSearch] = useState(""); // búsqueda manual
+  const [suggestions, setSuggestions] = useState([]); // sugerencias de autocompletado
+  const [showSuggestions, setShowSuggestions] = useState(false); // mostrar/ocultar dropdown
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
@@ -43,6 +45,65 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   }, [favorites]);
+
+  const isSelecting = useRef(false); // Flag to prevent re-opening dropdown on selection
+
+  // --- Debounce para Autocomplete ---
+  useEffect(() => {
+    // Skip if this change was triggered by selecting an item
+    if (isSelecting.current) {
+      isSelecting.current = false;
+      return;
+    }
+
+    const delayDebounceFn = setTimeout(() => {
+      if (search.trim().length > 1) {
+        fetchSuggestions(search);
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [search]);
+
+  // --- Buscar sugerencias (Autocomplete) ---
+  async function fetchSuggestions(query) {
+    if (!query) return;
+    try {
+      const res = await fetch(
+        `https://itunes.apple.com/search?term=${encodeURIComponent(
+          query
+        )}&media=music&entity=song&limit=10` // Increased limit to find unique ones
+      );
+      const data = await res.json();
+      
+      const rawResults = data.results.map((track) => ({
+        id: track.trackId,
+        title: track.trackName,
+        author: track.artistName,
+        cover: track.artworkUrl60, 
+      }));
+
+      // Deduplicate by Title + Author
+      const uniqueResults = [];
+      const seen = new Set();
+
+      for (const r of rawResults) {
+        const key = `${r.title.toLowerCase()}-${r.author.toLowerCase()}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueResults.push(r);
+        }
+      }
+
+      setSuggestions(uniqueResults.slice(0, 5)); // Keep top 5 unique
+      setShowSuggestions(true);
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+    }
+  }
 
   // --- Buscar canciones en iTunes (manual o desde el agent) ---
   async function fetchSongs(query) {
@@ -177,15 +238,48 @@ export default function App() {
         </h1>
 
         {/* 🔹 BÚSQUEDA MANUAL */}
+        {/* 🔹 BÚSQUEDA MANUAL */}
         <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search artists or songs..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && fetchSongs(search)}
-          />
-          <button onClick={() => fetchSongs(search)}>Search</button>
+          <div className="search-input-wrapper">
+            <input
+              type="text"
+              placeholder="Search artists or songs..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                   fetchSongs(search);
+                   setShowSuggestions(false);
+                }
+              }}
+              onFocus={() => {
+                if (search.trim().length > 1) setShowSuggestions(true);
+              }}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} // Delay to allow click
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="suggestions-dropdown">
+                {suggestions.map((s) => (
+                  <li 
+                    key={s.id} 
+                    onClick={() => {
+                      isSelecting.current = true; // Mark as selection to block useEffect
+                      setSearch(`${s.title} ${s.author}`);
+                      fetchSongs(`${s.title} ${s.author}`);
+                      setShowSuggestions(false);
+                    }}
+                  >
+                    {/* Removed Image */}
+                    <div>
+                      <strong>{s.title}</strong>
+                      <span>{s.author}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <button onClick={() => { fetchSongs(search); setShowSuggestions(false); }}>Search</button>
         </div>
           <div className="theme-switch-container" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <label className="theme-switch">

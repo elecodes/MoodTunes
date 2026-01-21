@@ -258,7 +258,7 @@ header {
   
   /* Background Image Control */
   position: relative; /* Needed for absolute pseudo-element */
-  overflow: hidden;   /* Clip the background image */
+  /* overflow: hidden;  REMOVED to allow dropdown to show */
 }
 
 /* Header Background Image */
@@ -577,4 +577,75 @@ button:active {
   color: white;
   align-self: flex-end;
   border-bottom-right-radius: 2px;
+}
+
+/* --- Autocomplete Dropdown --- */
+.search-input-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.search-input-wrapper input {
+  width: 100%; /* Ensure input takes full width of wrapper */
+  box-sizing: border-box; /* Handle padding correctly */
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-hover);
+  margin-top: 8px;
+  list-style: none;
+  padding: 0;
+  z-index: 1001; /* Above everything */
+  overflow: hidden;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.suggestions-dropdown li {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.suggestions-dropdown li:last-child {
+  border-bottom: none;
+}
+
+.suggestions-dropdown li:hover {
+  background: var(--input-bg);
+}
+
+/* Removed image styles for simplicity */
+
+.suggestions-dropdown li div {
+  display: flex;
+  flex-direction: row; /* Align side-by-side or keep column? User said "name of artist, song" */
+  gap: 8px;
+  align-items: baseline;
+}
+
+.suggestions-dropdown li strong {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.suggestions-dropdown li span {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.suggestions-dropdown li span::before {
+  content: "-";
+  margin-right: 8px;
 }
