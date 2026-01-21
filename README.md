@@ -8,6 +8,8 @@ Users can discover music either by searching manually or by chatting with the AI
 
 -   **AI Mood Assistant**: Chat with the integrated Voiceflow agent (powered by LLMs) to get music recommendations based on how you feel.
 -   **Smart Integration**: When the agent suggests songs, they automatically appear in the app's result list for instant playback.
+-   **Search Autocomplete**: Real-time suggestions as you type, helping you find artists and songs faster.
+-   **Enhanced UX/UI**: Designed with Nielsen's Heuristics and WCAG accessibility standards in mind (Skeleton loading, clear buttons, ARIA labels).
 -   **iTunes API**: Real-time music search and 30-second previews.
 -   **Favorites**: Save your favorite tracks locally.
 -   **Responsive Design**: A clean, modern UI that works on desktop and mobile.

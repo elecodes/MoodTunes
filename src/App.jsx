@@ -7,7 +7,9 @@ import logo from "./assets/logo.png";
 export default function App() {
   const [songs, setSongs] = useState([]); // canciones buscadas
   const [favorites, setFavorites] = useState([]); // lista de favoritos
+
   const [search, setSearch] = useState(""); // búsqueda manual
+  const [loading, setLoading] = useState(false); // Loading state for UX
   const [suggestions, setSuggestions] = useState([]); // sugerencias de autocompletado
   const [showSuggestions, setShowSuggestions] = useState(false); // mostrar/ocultar dropdown
   const [darkMode, setDarkMode] = useState(() => {
@@ -130,6 +132,7 @@ export default function App() {
 
     setSongs(results);
     setPage(1);
+    setLoading(false);
   }
 
   // --- Recibir canciones desde Voiceflow ---
@@ -257,6 +260,15 @@ export default function App() {
               }}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} // Delay to allow click
             />
+            {search && (
+              <button 
+                className="btn-clear"
+                onClick={() => { setSearch(""); setSongs([]); }}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
             {showSuggestions && suggestions.length > 0 && (
               <ul className="suggestions-dropdown">
                 {suggestions.map((s) => (
@@ -279,7 +291,7 @@ export default function App() {
               </ul>
             )}
           </div>
-          <button onClick={() => { fetchSongs(search); setShowSuggestions(false); }}>Search</button>
+          <button onClick={() => { fetchSongs(search); setShowSuggestions(false); }} aria-label="Search">Search</button>
         </div>
           <div className="theme-switch-container" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <label className="theme-switch">
@@ -301,34 +313,50 @@ export default function App() {
         <section className="songs">
           <h2>Results</h2>
           <div className="grid">
-            {paginatedSongs.length === 0 && <p style={{ padding: '0 1rem' }}>No results found.</p>}
-            {paginatedSongs.map((song) => {
-              const isFav = favorites.find((f) => f.id === song.id);
-              return (
-                <div key={song.id} className="card">
-                  <img src={song.cover} alt={song.title} loading="lazy" />
-                  <h3>{song.title}</h3>
-                  <p>{song.author}</p>
-                  <p className="style">{song.style}</p>
-                  {song.preview && <audio controls src={song.preview} />}
-                  <button 
-                    className={`btn-favorite ${isFav ? 'active' : ''}`}
-                    onClick={() => toggleFavorite(song)}
-                    style={{ 
-                      marginTop: '10px', 
-                      background: 'transparent', 
-                      border: 'none', 
-                      fontSize: '1.5rem',
-                      boxShadow: 'none',
-                      padding: '5px'
-                    }}
-                  >
-                    {isFav ? "❤️" : "🤍"}
-                  </button>
+
+            {loading ? (
+              // Skeleton Loading State
+              Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="skeleton-card">
+                  <div className="skeleton-img"></div>
+                  <div className="skeleton-text"></div>
+                  <div className="skeleton-text short"></div>
                 </div>
-              );
-            })}
+              ))
+            ) : (
+                <>
+                {paginatedSongs.length === 0 && <p style={{ padding: '0 1rem' }}>No results found.</p>}
+                {paginatedSongs.map((song) => {
+                  const isFav = favorites.find((f) => f.id === song.id);
+                  return (
+                    <div key={song.id} className="card">
+                      <img src={song.cover} alt={`Cover for ${song.title} by ${song.author}`} loading="lazy" />
+                      <h3>{song.title}</h3>
+                      <p>{song.author}</p>
+                      <p className="style">{song.style}</p>
+                      {song.preview && <audio controls src={song.preview} aria-label={`Listen preview of ${song.title}`} />}
+                      <button 
+                        className={`btn-favorite ${isFav ? 'active' : ''}`}
+                        onClick={() => toggleFavorite(song)}
+                        aria-label={isFav ? `Remove ${song.title} from favorites` : `Add ${song.title} to favorites`}
+                        style={{ 
+                          marginTop: '10px', 
+                          background: 'transparent', 
+                          border: 'none', 
+                          fontSize: '1.5rem',
+                          boxShadow: 'none',
+                          padding: '5px'
+                        }}
+                      >
+                        {isFav ? "❤️" : "🤍"}
+                      </button>
+                    </div>
+                  );
+                })}
+                </>
+            )}
           </div>
+
 
           {/* --- Paginación canciones --- */}
           {songs.length > perPage && (
@@ -363,6 +391,7 @@ export default function App() {
                 <button 
                     className="btn-remove"
                     onClick={() => toggleFavorite(song)}
+                    aria-label={`Remove ${song.title} from favorites`}
                     style={{ marginTop: '10px' }}
                 >
                   ❌ Remove
