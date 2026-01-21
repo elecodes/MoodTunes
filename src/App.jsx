@@ -122,20 +122,55 @@ export default function App() {
   function toggleFavorite(song) {
     const exists = favorites.find((f) => f.id === song.id);
     if (exists) {
+      console.log("Removing favorite:", song.title);
       setFavorites(favorites.filter((f) => f.id !== song.id));
     } else {
+      console.log("Adding favorite:", song.title);
       setFavorites([...favorites, song]);
       setFavPage(1);
     }
   }
 
+  // 🔹 Mood State
+  const [currentMood, setCurrentMood] = useState("default");
+
+  // 🔹 Handle Mood Change (from Voiceflow or internal)
+  function handleMoodChange(mood) {
+    // Expected moods: 'calm', 'energetic', 'focus', 'melancholic'
+    const validMoods = ['calm', 'energetic', 'focus', 'melancholic'];
+    const normalized = mood?.toLowerCase();
+    if (validMoods.includes(normalized)) {
+      setCurrentMood(normalized);
+    } else {
+      setCurrentMood('default');
+    }
+  }
+
+  // 🔹 Bridge for Voiceflow Mood
+  useEffect(() => {
+    window.handleVoiceflowMood = handleMoodChange;
+    return () => {
+      delete window.handleVoiceflowMood;
+    };
+  }, []);
+
+  // 🔹 Dynamic Background Style
+  const getBackgroundStyle = () => {
+    const isDark = darkMode;
+    const moodVar = isDark
+      ? `var(--gradient-${currentMood}-dark)`
+      : `var(--gradient-${currentMood})`;
+    
+    // Fallback to main bg if default
+    return currentMood === 'default' 
+      ? {} 
+      : { background: moodVar };
+  };
+
   return (
-    <div className="app">
+    <div className="app" style={getBackgroundStyle()}>
       <header>
         <h1>🎵 MoodTunes</h1>
-
-        {/* 🔹 AGENTE DE MOOD -- REPLACED BY WIDGET */}
-        {/* <MoodAssistant onSongsReceived={handleAgentSongs} /> */}
 
         {/* 🔹 BÚSQUEDA MANUAL */}
         <div className="search-bar">
@@ -164,25 +199,37 @@ export default function App() {
       </header>
 
       <main>
-        {/* --- Resultados --- */}
+        {/* --- Resultados (Horizontal Scroll) --- */}
         <section className="songs">
           <h2>Results</h2>
           <div className="grid">
-            {paginatedSongs.length === 0 && <p>No results found.</p>}
-            {paginatedSongs.map((song) => (
-              <div key={song.id} className="card">
-                <img src={song.cover} alt={song.title} />
-                <h3>{song.title}</h3>
-                <p>{song.author}</p>
-                <p className="style">{song.style}</p>
-                {song.preview && <audio controls src={song.preview} />}
-                <button onClick={() => toggleFavorite(song)}>
-                  {favorites.find((f) => f.id === song.id)
-                    ? "⭐ Remove"
-                    : "☆ Fav"}
-                </button>
-              </div>
-            ))}
+            {paginatedSongs.length === 0 && <p style={{ padding: '0 1rem' }}>No results found.</p>}
+            {paginatedSongs.map((song) => {
+              const isFav = favorites.find((f) => f.id === song.id);
+              return (
+                <div key={song.id} className="card">
+                  <img src={song.cover} alt={song.title} loading="lazy" />
+                  <h3>{song.title}</h3>
+                  <p>{song.author}</p>
+                  <p className="style">{song.style}</p>
+                  {song.preview && <audio controls src={song.preview} />}
+                  <button 
+                    className={`btn-favorite ${isFav ? 'active' : ''}`}
+                    onClick={() => toggleFavorite(song)}
+                    style={{ 
+                      marginTop: '10px', 
+                      background: 'transparent', 
+                      border: 'none', 
+                      fontSize: '1.5rem',
+                      boxShadow: 'none',
+                      padding: '5px'
+                    }}
+                  >
+                    {isFav ? "❤️" : "🤍"}
+                  </button>
+                </div>
+              );
+            })}
           </div>
 
           {/* --- Paginación canciones --- */}
@@ -215,7 +262,11 @@ export default function App() {
                 <h3>{song.title}</h3>
                 <p>{song.author}</p>
                 {song.preview && <audio controls src={song.preview} />}
-                <button onClick={() => toggleFavorite(song)}>
+                <button 
+                    className="btn-remove"
+                    onClick={() => toggleFavorite(song)}
+                    style={{ marginTop: '10px' }}
+                >
                   ❌ Remove
                 </button>
               </div>

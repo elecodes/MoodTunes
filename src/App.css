@@ -3,104 +3,159 @@
   --brand-accent: #9D27FF;        /* Violeta principal */
   --brand-status: #A855F7;        /* Texto de estado */
   --success-play: #10B981;        /* Verde para éxito/reproducción */
-  --gradient-banner: linear-gradient(135deg, #6366F1 0%, #EC4899 100%);
+  
+  /* Ambient Gradients for Moods (to be used via JS or classes) */
+  --gradient-calm: linear-gradient(135deg, #E0E7FF 0%, #F3E8FF 100%);
+  --gradient-energetic: linear-gradient(135deg, #FFF7ED 0%, #FEF3C7 100%);
+  --gradient-focus: linear-gradient(135deg, #F0FDFA 0%, #E0F2FE 100%);
+  --gradient-melancholic: linear-gradient(135deg, #FDF4FF 0%, #F5F3FF 100%);
+  
+  /* Mood Gradients Dark */
+  --gradient-calm-dark: linear-gradient(135deg, #1E1B4B 0%, #2E1065 100%);
+  --gradient-energetic-dark: linear-gradient(135deg, #451A03 0%, #422006 100%);
+  --gradient-focus-dark: linear-gradient(135deg, #022C22 0%, #082F49 100%);
+  --gradient-melancholic-dark: linear-gradient(135deg, #2E1065 0%, #4C1D95 100%);
 }
 
 /* 1. Default (Light Mode) */
 :root {
-  --bg-main: #F1F5F9;             
+  --bg-main: #F9F9F8;             /* Sophisticated Off-White */
   --bg-surface: #FFFFFF;          
-  --bg-header: #FFFFFF;           
-  --bg-card: #FFFFFF;             
-  --text-primary: #0F172A;        
-  --text-secondary: #64748B;
-  --border-color: #E2E8F0;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --bg-header: rgba(255, 255, 255, 0.8); /* Glassmorphism base */
+  --bg-card: rgba(255, 255, 255, 0.7);   /* Glassmorphism card */
+  --text-primary: #0D0D0D;        /* Sharp Black */
+  --text-secondary: #525252;      /* Neutral Grey */
+  --border-color: rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-hover: 0 8px 24px rgba(0,0,0,0.08);
 
   --navbar-bg: var(--bg-header);
   --navbar-text: var(--text-primary);
-  --input-bg: var(--bg-surface);
+  --input-bg: rgba(0, 0, 0, 0.03);
 }
 
 /* 2. System Dark Mode Preference */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-main: linear-gradient(180deg, rgba(33, 31, 46, 0.95) 0%, rgba(15, 12, 24, 0.95) 100%);
-    --bg-surface: #1E1B2E;        
-    --bg-header: linear-gradient(90deg, rgba(56, 51, 85, 0.9) 0%, rgba(33, 31, 46, 0.9) 100%); /* Purple Gradient + Opacity */
-    --bg-card: #0F0C18;           /* Near Black for Cards */
+    --bg-main: #0D0D0D;           
+    --bg-surface: #171717;        
+    --bg-header: rgba(40, 40, 40, 0.9); /* Lighter header for contrast */
+    --bg-card: rgba(35, 35, 35, 0.7); /* Distinct Dark Grey Glass */
     
-    --text-primary: #d8d5e6;      
-    --text-secondary: #94A3B8;
-    --border-color: #2D2A37;
-    --shadow-sm: 0 4px 6px rgba(0,0,0,0.4);
+    --text-primary: #F5F5F5;      
+    --text-secondary: #A3A3A3;
+    --border-color: rgba(255, 255, 255, 0.15); /* Stronger border */
+    --shadow-sm: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-hover: 0 8px 24px rgba(0,0,0,0.6);
 
     --navbar-bg: var(--bg-header);
     --navbar-text: var(--text-primary);
-    --input-bg: #1E1B2E;
+    --input-bg: rgba(255, 255, 255, 0.1); /* Lighter input */
   }
 }
 
 /* 3. Forced Overrides */
 [data-theme='dark'] {
-  --bg-main: linear-gradient(180deg, rgba(33, 31, 46, 0.95) 0%, rgba(15, 12, 24, 0.95) 100%);
-  --bg-surface: #1E1B2E;
-  --bg-header: linear-gradient(90deg, rgba(56, 51, 85, 0.9) 0%, rgba(33, 31, 46, 0.9) 100%); /* Purple Gradient + Opacity */
-  --bg-card: #0F0C18;             /* Near Black for Cards */
+  --bg-main: #0D0D0D;
+  --bg-surface: #171717;
+  --bg-header: rgba(40, 40, 40, 0.9); /* Lighter header for contrast */
+  --bg-card: rgba(35, 35, 35, 0.7); /* Distinct Dark Grey Glass */
   
-  --text-primary: #d8d5e6;
-  --text-secondary: #94A3B8;
-  --border-color: #2D2A37;
-  --shadow-sm: 0 4px 6px rgba(0,0,0,0.4);
+  --text-primary: #F5F5F5;
+  --text-secondary: #A3A3A3;
+  --border-color: rgba(255, 255, 255, 0.15);
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-hover: 0 8px 24px rgba(0,0,0,0.6);
 
   --navbar-bg: var(--bg-header);
   --navbar-text: var(--text-primary);
-  --input-bg: #1E1B2E;
+  --input-bg: rgba(255, 255, 255, 0.1);
 }
 
+/* ... existing light mode code ... */
+
+/* Icons container */
+.slider .icon-moon, .slider .icon-sun {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px; /* Bigger icons */
+  font-weight: bold;
+  transition: opacity 0.3s, transform 0.4s;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.slider .icon-sun {
+  left: 8px;
+  opacity: 1;
+  color: #FFF7ED; /* Bright Warm White */
+  filter: drop-shadow(0 0 2px rgba(255, 200, 0, 0.8)); /* Glow */
+}
+
+.slider .icon-moon {
+  right: 8px;
+  opacity: 0.5;
+  color: #94A3B8;
+}
+
+/* Active Icon States */
+input:checked + .slider .icon-sun {
+  opacity: 0.3;
+  transform: translateY(-50%) rotate(90deg);
+  color: #64748B;
+  filter: none;
+}
+
+input:checked + .slider .icon-moon {
+  opacity: 1;
+  color: #FFFFFF; /* Pure White Moon */
+  transform: translateY(-50%) rotate(0deg);
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6)); /* Moon Glow */
+}
+/* [data-theme='light'] */
 [data-theme='light'] {
-  --bg-main: #F1F5F9;
+  --bg-main: #F9F9F8;
   --bg-surface: #FFFFFF;
-  --bg-header: #FFFFFF;
-  --bg-card: #FFFFFF;
+  --bg-header: rgba(255, 255, 255, 0.8);
+  --bg-card: rgba(255, 255, 255, 0.7);
   
-  --text-primary: #0F172A;
-  --text-secondary: #64748B;
-  --border-color: #E2E8F0;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --text-primary: #0D0D0D;
+  --text-secondary: #525252;
+  --border-color: rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-hover: 0 8px 24px rgba(0,0,0,0.08);
 
   --navbar-bg: var(--bg-header);
   --navbar-text: var(--text-primary);
-  --input-bg: var(--bg-surface);
+  --input-bg: rgba(0, 0, 0, 0.03);
 }
 
 body {
   background: var(--bg-main);
   color: var(--text-primary);
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.8s ease, color 0.3s ease; /* Smooth 0.8s transition */
+  font-weight: 400; /* Regular body */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300; /* Light headers */
 }
 
 /* --- Toggle Switch Styling (Fixed) --- */
+/* --- Toggle Switch Styling (Bending Spoons Polish - Large & Colorful) --- */
 .theme-switch {
   position: relative;
   display: inline-block;
-  width: 52px;
-  height: 26px;
+  width: 70px; /* Bigger */
+  height: 36px; /* Bigger */
   margin-left: 10px;
-  z-index: 10; /* Ensure label is above context? */
+  z-index: 10;
 }
 
-/* Hide default checkbox completely - Aggressive */
 .theme-switch input {
-  opacity: 0 !important;
-  width: 0 !important;
-  height: 0 !important;
-  margin: 0 !important;
-  position: absolute;
-  z-index: -9999;
-  appearance: none; /* Standard */
-  -webkit-appearance: none; /* Safari/Chrome */
-  pointer-events: none; /* Ensure no interaction catches on the invis input if overlaying */
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .slider {
@@ -110,52 +165,76 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #CBD5E1; 
-  transition: .4s;
+  background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%); /* Vibrant Day Blue */
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   border-radius: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 6px;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Icons inside slider */
-.slider .icon-moon, .slider .icon-sun {
-  font-size: 12px;
-  line-height: 1;
-  z-index: 10;
-  transition: opacity 0.3s;
-}
-
-.slider .icon-moon { opacity: 0; }
-.slider .icon-sun { opacity: 1; color: #F59E0B; } 
-
+/* Background change on checked - Deep Night */
 input:checked + .slider {
-  background-color: var(--bg-surface); 
-  border-color: var(--brand-accent);
+  background: linear-gradient(135deg, #1E1B4B 0%, #000000 100%); /* Deep Purple/Black */
+  border-color: rgba(255,255,255,0.1);
 }
 
-input:checked + .slider .icon-moon { opacity: 1; color: #FFFFFF; }
-input:checked + .slider .icon-sun { opacity: 0; }
-
+/* The Moving Circle (Thumb) */
 .slider:before {
   position: absolute;
   content: "";
-  height: 20px;
-  width: 20px;
-  left: 3px;
-  bottom: 2px;
+  height: 28px; /* Bigger thumb */
+  width: 28px;
+  left: 4px;
+  bottom: 3px; /* vertically centered relative to 36px height (36-28)/2 = 4, but bottom used? let's stick to simple math */
+  bottom: 3px; /* 3px from bottom? (36-28-2borders)/2? border is on parent.
+                  Parent H=36, Border=1. Inner H=34.
+                  Thumb=28. Space=6. Top/Bottom=3. Correct. */
   background-color: white;
-  transition: .4s;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.1);
   z-index: 20;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
+/* Move thumb on checked */
 input:checked + .slider:before {
-  transform: translateX(24px);
-  background-color: var(--brand-accent); 
+  transform: translateX(34px); /* 70w - 28thumb - 4left - 4right = 34 travel */
+  background-color: #F8FAFC; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* Icons container */
+.slider .icon-moon, .slider .icon-sun {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  transition: opacity 0.3s, transform 0.4s;
+}
+
+.slider .icon-sun {
+  left: 8px;
+  opacity: 1;
+  color: #F59E0B; /* Warm yellow */
+}
+
+.slider .icon-moon {
+  right: 9px;
+  opacity: 0.3; /* Greyed out when not active */
+  color: #94A3B8;
+}
+
+/* Active Icon States */
+input:checked + .slider .icon-sun {
+  opacity: 0.3;
+  transform: translateY(-50%) rotate(90deg); /* Rotate out */
+  color: #64748B;
+}
+
+input:checked + .slider .icon-moon {
+  opacity: 1;
+  color: #A78BFA; /* Soft purple moon */
+  transform: translateY(-50%) rotate(0deg);
 }
 
 /* --- Header fijo --- */
@@ -175,96 +254,147 @@ header {
 /* --- Layout principal --- */
 main {
   display: grid;
-  grid-template-columns: 2fr 1fr; /* canciones grandes, favoritos más estrecho */
-  gap: 15px;
-  height: 100vh; /* que ocupe toda la ventana */
-  overflow: hidden; /* evita scroll general */
-  margin-top: 10px;
-  background: var(--bg-main); /* Explicitly set main bg */
+  grid-template-columns: 1fr; /* Mobile: Stacked */
+  gap: 24px;
+  min-height: calc(100vh - 80px); /* Adjust for header */
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 /* --- Panel canciones --- */
 .songs {
-  height: 100vh;
-  overflow-y: auto; /* scroll interno */
-  padding-right: 5px;
-  box-sizing: border-box;
-  /* Remove border left if not needed, or update color */
+  width: 100%;
+  min-width: 0; /* CRITICAL: Allows grid item to shrink below content size, enabling scroll */
+  overflow: hidden; /* Contain inner scroll */
 }
 
 /* --- Panel favoritos --- */
 .favorites {
-  height: 100vh;
-  overflow-y: auto; /* scroll interno */
-  padding-right: 5px;
-  box-sizing: border-box;
-  border-left: 1px solid var(--border-color);
-  background: var(--bg-main); /* Ensure it matches main or surface? */
+  width: 100%;
+  background: transparent;
+  border-radius: 12px;
+  padding: 16px;
+  border: none;
+  max-height: 500px; 
+  overflow-y: auto;
 }
 
-/* --- Rejilla de canciones --- */
-.songs .grid {
-  display: grid;
-  /*grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));*/
-  gap: 12px;
-}
-
-/* --- Rejilla de favoritos --- */
+/* --- Rejilla de favoritos (Strict/Base) --- */
 .favorites .grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px;
+  gap: 16px;
 }
 
-/* --- Estilos de las cards --- */
+/* --- Rejilla de canciones (Horizontal Scroll) --- */
+.songs .grid {
+  display: flex;
+  overflow-x: auto;
+  gap: 24px; 
+  padding: 10px 4px 20px 4px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ... scrollbar styles ... */
+/* Custom Scrollbar for horizontal container */
+.songs .grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.songs .grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.songs .grid::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
+}
+
+.songs .grid .card {
+  min-width: 200px;
+  max-width: 200px;
+  flex-shrink: 0;
+}
+/* Removed legacy grid media queries */
+
+/* --- Rejilla de favoritos (Strictly 1 column) --- */
+.favorites .grid {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 16px;
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  main {
+    grid-template-columns: 1fr 340px; /* Sidebar slightly wider to accommodate cards */
+    align-items: start;
+    gap: 32px; /* More breathing room */
+  }
+
+  .favorites {
+    position: sticky;
+    top: 90px;
+    height: calc(100vh - 110px);
+    max-height: none;
+    overflow-y: auto;
+  }
+}
+
+/* --- Estilos de las cards (Restored) --- */
 .card {
-  background: var(--bg-card); /* Use new card var */
-  border-radius: 8px;
-  padding: 10px;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 16px;
   box-shadow: var(--shadow-sm);
   text-align: center;
   color: var(--text-primary);
-  border: 1px solid var(--border-color); /* Add border for definition */
-  transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
+  border: 1px solid var(--border-color);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
 }
 
 .card img {
   width: 100%;
-  border-radius: 6px;
-  margin-bottom: 8px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 /* Ajustar audio al ancho de la card */
 .card audio {
-  width: 100%;
-  margin-top: 6px;
+  width: 90%; /* Visually smaller width */
+  margin-top: 12px;
+  height: 32px; /* Restore standard height for controls to work */
+  /* transform: scale(0.9); Removed scale to avoid hit-test issues */
 }
 
-/* --- Navbar fijo (Legacy class override if still used, but main header is now header tag) --- */
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background-color: var(--navbar-bg);
-  color: var(--navbar-text);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  z-index: 1000;
+/* Micro-interaction: Button Click Scale */
+button:active {
+  transform: scale(0.96);
 }
 
-.navbar-brand {
-  font-size: 1.2rem;
-  font-weight: bold;
+/* Micro-interaction: Favorite Heart Spring */
+@keyframes heart-spring {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
 }
 
+.btn-favorite.active {
+  animation: heart-spring 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: #EF4444; /* Red for active heart */
+}
+
+/* --- Search Bar (Restored) --- */
 .search-bar {
   display: flex;
   gap: 10px;
@@ -275,57 +405,43 @@ main {
 
 .search-bar input {
   flex: 1;
-  padding: 12px 20px;
-  border-radius: 30px;
+  padding: 14px 24px;
+  border-radius: 12px;
   border: 1px solid var(--border-color);
   background: var(--input-bg);
   color: var(--text-primary);
   font-size: 1rem;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s;
+  font-family: inherit;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  transition: all 0.2s ease;
 }
 
 .search-bar input:focus {
   outline: none;
   border-color: var(--brand-accent);
-  box-shadow: 0 0 0 2px var(--brand-accent);
+  box-shadow: 0 0 0 3px rgba(157, 39, 255, 0.2);
+  background: var(--bg-surface);
 }
 
 .search-bar button {
-  padding: 12px 24px;
-  border-radius: 30px;
+  padding: 14px 28px;
+  border-radius: 12px;
   background: var(--brand-accent);
   color: #fff;
   border: none;
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: background 0.2s;
+  box-shadow: 0 4px 12px rgba(157, 39, 255, 0.3);
+  transition: background 0.2s, transform 0.1s;
 }
 
 .search-bar button:hover {
   background: var(--brand-status);
-}
-.navbar-links {
-  list-style: none;
-  display: flex;
-  gap: 15px;
-  margin: 0;
-  padding: 0;
+  transform: translateY(-1px);
 }
 
-.navbar-links li a {
-  color: white;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.navbar-links li a:hover {
-  color: var(--brand-accent);
-}
-
-/* --- Paginación --- */
+/* --- Pagination (Restored) --- */
 .pagination {
   display: flex;
   justify-content: center;
@@ -335,19 +451,19 @@ main {
 }
 
 .pagination button {
-  background-color: var(--bg-secondary-btn); /* Updated to use new var */
-  color: var(--text-primary); /* Dark text on light button in light mode? */
+  background-color: transparent;
+  color: var(--text-primary);
   border: 1px solid var(--border-color);
-  padding: 6px 12px;
-  border-radius: 5px;
+  padding: 8px 16px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
-[data-theme='dark'] .pagination button {
-    color: #fff; /* Ensure visible in dark mode */
+.pagination button:hover:not(:disabled) {
+  background-color: var(--bg-surface);
+  border-color: var(--brand-accent);
 }
-
 
 .pagination button:disabled {
   opacity: 0.5;
@@ -359,36 +475,30 @@ main {
   color: var(--text-secondary);
 }
 
-/* --- MOOD ASSISTANT STYLES --- */
+/* --- Chat / Mood Assistant (Restored) --- */
 .mood-assistant {
   background: var(--bg-surface);
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-bottom: 1rem;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
 }
 
-.mood-assistant h3 {
-  margin-top: 0;
-  color: var(--brand-accent);
-}
-
 .chat {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 10px;
   height: 200px;
   overflow-y: auto;
-  margin-bottom: 10px;
+  gap: 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
 .msg {
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 12px;
   max-width: 80%;
   font-size: 0.95rem;
@@ -396,7 +506,7 @@ main {
 }
 
 .msg.agent {
-  background: var(--bg-main); /* Contrast against card */
+  background: var(--bg-main);
   align-self: flex-start;
   border-bottom-left-radius: 2px;
   color: var(--text-primary);
@@ -407,69 +517,4 @@ main {
   color: white;
   align-self: flex-end;
   border-bottom-right-radius: 2px;
-}
-
-.input-row {
-  display: flex;
-  gap: 10px;
-}
-
-.input-row input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background: var(--input-bg);
-  color: var(--text-primary);
-}
-
-.input-row button {
-  padding: 8px 16px;
-  background: var(--brand-accent);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.input-row button:disabled {
-  background: var(--border-color);
-}
-
-.ended {
-  color: var(--text-secondary);
-  font-style: italic;
-  text-align: center;
-}
-
-@media (max-width: 600px) {
-  .songs .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 601px) and (max-width: 1024px) {
-  .songs .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1025px) {
-  .songs .grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (min-width: 900px) {
-  main {
-    grid-template-columns: 1fr 220px; /* canciones flexibles + aside estrecho */
-  }
-
-  .favorites {
-    max-width: 280px; /* no se estira más de este ancho */
-  }
-
-  .favorites .grid {
-    grid-template-columns: 1fr; /* 1 columna en aside pequeño */
-  }
 }
