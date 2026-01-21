@@ -1,5 +1,6 @@
 import "./App.css";
 import { useState, useEffect } from "react";
+import logo from "./assets/logo.png";
 // import MoodAssistant from "./components/MoodAssistant";
 
 // --- Componente principal ---
@@ -170,7 +171,10 @@ export default function App() {
   return (
     <div className="app" style={getBackgroundStyle()}>
       <header>
-        <h1>🎵 MoodTunes</h1>
+        <h1>
+          <img src={logo} alt="MoodTunes Logo" className="app-logo" />
+          MoodTunes
+        </h1>
 
         {/* 🔹 BÚSQUEDA MANUAL */}
         <div className="search-bar">
@@ -183,7 +187,7 @@ export default function App() {
           />
           <button onClick={() => fetchSongs(search)}>Search</button>
         </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div className="theme-switch-container" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <label className="theme-switch">
               <input 
                 type="checkbox" 

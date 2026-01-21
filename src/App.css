@@ -245,10 +245,70 @@ header {
   background: var(--navbar-bg); /* Now uses specific header var */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  padding: 10px;
+  padding: 1rem 2rem;
   border-bottom: 2px solid var(--border-color);
   box-shadow: var(--shadow-sm);
   transition: background-color 0.3s;
+  
+  /* Flexbox for centering */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  /* Background Image Control */
+  position: relative; /* Needed for absolute pseudo-element */
+  overflow: hidden;   /* Clip the background image */
+}
+
+/* Header Background Image */
+header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('./assets/header-bg.png');
+  background-size: cover; /* or contain, depending on preference. cover usually best for texture */
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.15; /* Subtle opacity */
+  z-index: -1;
+  pointer-events: none;
+  transition: filter 0.3s ease;
+}
+
+/* Dark Mode Background Inversion (make notes white) */
+[data-theme='dark'] header::before {
+  filter: invert(1);
+  opacity: 0.1; /* Slightly lower opacity for dark mode contrast */
+}
+
+header h1 {
+  margin: 0.5rem 0;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.app-logo {
+  height: 48px; /* Slightly larger than text */
+  width: auto;
+  transition: filter 0.3s ease;
+}
+
+/* Dark Mode Logo Handling - Default is fine for colorful logo */
+/* [data-theme='dark'] .app-logo { filter: invert(1); } */
+
+/* Position the theme toggle absolutely to the right */
+header .theme-switch-container {
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
 }
 
 /* --- Layout principal --- */
