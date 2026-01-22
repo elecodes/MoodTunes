@@ -30,12 +30,46 @@ export default function App() {
   const end = start + perPage;
   const paginatedSongs = songs.slice(start, end);
 
-  // 🔹 Estado de paginación favoritos
-  const [favPage, setFavPage] = useState(1);
-  const favPerPage = 6;
-  const favStart = (favPage - 1) * favPerPage;
-  const favEnd = favStart + favPerPage;
-  const favPaginated = favorites.slice(favStart, favEnd);
+  const [lastRemoved, setLastRemoved] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+
+  const [focusedIndex, setFocusedIndex] = useState(-1); // Keyboard navigation index
+
+  function handleKeyDown(e) {
+    if (!showSuggestions || suggestions.length === 0) {
+        if (e.key === "Enter") {
+             fetchSongs(search);
+             setShowSuggestions(false);
+        }
+        return;
+    }
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setFocusedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : 0));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setFocusedIndex((prev) => (prev > 0 ? prev - 1 : suggestions.length - 1));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (focusedIndex >= 0 && suggestions[focusedIndex]) {
+        selectSuggestion(suggestions[focusedIndex]);
+      } else {
+        fetchSongs(search);
+        setShowSuggestions(false);
+      }
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+    }
+  }
+  
+  function selectSuggestion(s) {
+      isSelecting.current = true;
+      setSearch(`${s.title} ${s.author}`);
+      fetchSongs(`${s.title} ${s.author}`);
+      setShowSuggestions(false);
+      setFocusedIndex(-1);
+  }
 
   // --- Cargar favoritos ---
   useEffect(() => {
@@ -48,11 +82,10 @@ export default function App() {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   }, [favorites]);
 
-  const isSelecting = useRef(false); // Flag to prevent re-opening dropdown on selection
+  const isSelecting = useRef(false);
 
   // --- Debounce para Autocomplete ---
   useEffect(() => {
-    // Skip if this change was triggered by selecting an item
     if (isSelecting.current) {
       isSelecting.current = false;
       return;
@@ -77,7 +110,7 @@ export default function App() {
       const res = await fetch(
         `https://itunes.apple.com/search?term=${encodeURIComponent(
           query
-        )}&media=music&entity=song&limit=10` // Increased limit to find unique ones
+        )}&media=music&entity=song&limit=10`
       );
       const data = await res.json();
       
@@ -100,7 +133,7 @@ export default function App() {
         }
       }
 
-      setSuggestions(uniqueResults.slice(0, 5)); // Keep top 5 unique
+      setSuggestions(uniqueResults.slice(0, 5));
       setShowSuggestions(true);
     } catch (error) {
       console.error("Error fetching suggestions:", error);
@@ -113,26 +146,34 @@ export default function App() {
     const sanitizedQuery = query.trim().slice(0, 100);
     if (!sanitizedQuery) return;
 
-    const res = await fetch(
-      `https://itunes.apple.com/search?term=${encodeURIComponent(
-        sanitizedQuery
-      )}&media=music&entity=song&limit=50`
-    );
+    setLoading(true); // 🔹 Heuristic: Visibility of System Status
+    setSongs([]); 
 
-    const data = await res.json();
+    try {
+      const res = await fetch(
+        `https://itunes.apple.com/search?term=${encodeURIComponent(
+          sanitizedQuery
+        )}&media=music&entity=song&limit=50`
+      );
 
-    const results = data.results.map((track) => ({
-      id: track.trackId,
-      title: track.trackName,
-      author: track.artistName,
-      style: track.primaryGenreName || "Unknown",
-      cover: track.artworkUrl100,
-      preview: track.previewUrl,
-    }));
+      const data = await res.json();
 
-    setSongs(results);
-    setPage(1);
-    setLoading(false);
+      const results = data.results.map((track) => ({
+        id: track.trackId,
+        title: track.trackName,
+        author: track.artistName,
+        style: track.primaryGenreName || "Unknown",
+        cover: track.artworkUrl100,
+        preview: track.previewUrl,
+      }));
+
+      setSongs(results);
+      setPage(1);
+    } catch (error) {
+       console.error("Search failed", error);
+    } finally {
+       setLoading(false);
+    }
   }
 
   // --- Recibir canciones desde Voiceflow ---
@@ -183,17 +224,31 @@ export default function App() {
     };
   }
 
+
   // --- Añadir / quitar favoritos ---
   function toggleFavorite(song) {
     const exists = favorites.find((f) => f.id === song.id);
     if (exists) {
       console.log("Removing favorite:", song.title);
       setFavorites(favorites.filter((f) => f.id !== song.id));
+      
+      // 🔹 Heuristic: User Control (Undo)
+      setLastRemoved(song);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 5000); // 5s to undo
     } else {
       console.log("Adding favorite:", song.title);
       setFavorites([...favorites, song]);
       setFavPage(1);
     }
+  }
+
+  function handleUndo() {
+      if (lastRemoved) {
+          setFavorites((prev) => [...prev, lastRemoved]);
+          setLastRemoved(null);
+          setShowToast(false);
+      }
   }
 
   // 🔹 Mood State
@@ -231,6 +286,13 @@ export default function App() {
       ? {} 
       : { background: moodVar };
   };
+  
+  // 🔹 Estado de paginación favoritos
+  const [favPage, setFavPage] = useState(1);
+  const favPerPage = 6;
+  const favStart = (favPage - 1) * favPerPage;
+  const favEnd = favStart + favPerPage;
+  const favPaginated = favorites.slice(favStart, favEnd);
 
   return (
     <div className="app" style={getBackgroundStyle()}>
@@ -241,24 +303,25 @@ export default function App() {
         </h1>
 
         {/* 🔹 BÚSQUEDA MANUAL */}
-        {/* 🔹 BÚSQUEDA MANUAL */}
         <div className="search-bar">
           <div className="search-input-wrapper">
+             {/* 🔹 Accessibility: Explicit Label (Visually Hidden) */}
+            <label htmlFor="search-input" className="visually-hidden">Search artists or songs</label>
             <input
+              id="search-input"
               type="text"
               placeholder="Search artists or songs..."
+              aria-label="Search artists or songs"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                   fetchSongs(search);
-                   setShowSuggestions(false);
-                }
+              onChange={(e) => {
+                  setSearch(e.target.value);
+                  setFocusedIndex(-1); // Reset focus on type
               }}
+              onKeyDown={handleKeyDown}
               onFocus={() => {
                 if (search.trim().length > 1) setShowSuggestions(true);
               }}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} // Delay to allow click
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} 
             />
             {search && (
               <button 
@@ -270,18 +333,16 @@ export default function App() {
               </button>
             )}
             {showSuggestions && suggestions.length > 0 && (
-              <ul className="suggestions-dropdown">
-                {suggestions.map((s) => (
+              <ul className="suggestions-dropdown" role="listbox">
+                {suggestions.map((s, index) => (
                   <li 
                     key={s.id} 
-                    onClick={() => {
-                      isSelecting.current = true; // Mark as selection to block useEffect
-                      setSearch(`${s.title} ${s.author}`);
-                      fetchSongs(`${s.title} ${s.author}`);
-                      setShowSuggestions(false);
-                    }}
+                    role="option"
+                    aria-selected={index === focusedIndex}
+                    className={index === focusedIndex ? "focused" : ""}
+                    onClick={() => selectSuggestion(s)}
+                    onMouseEnter={() => setFocusedIndex(index)}
                   >
-                    {/* Removed Image */}
                     <div>
                       <strong>{s.title}</strong>
                       <span>{s.author}</span>
@@ -291,11 +352,14 @@ export default function App() {
               </ul>
             )}
           </div>
-          <button onClick={() => { fetchSongs(search); setShowSuggestions(false); }} aria-label="Search">Search</button>
+          {/* 🔹 Microcopy: Verbo + Sustantivo */}
+          <button onClick={() => { fetchSongs(search); setShowSuggestions(false); }} aria-label="Search Music">Search Music</button>
         </div>
           <div className="theme-switch-container" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <label className="theme-switch">
+            <label htmlFor="theme-toggle" className="visually-hidden">Toggle Dark Mode</label>
+            <label className="theme-switch" aria-label="Toggle dark mode">
               <input 
+                id="theme-toggle"
                 type="checkbox" 
                 checked={darkMode} 
                 onChange={() => setDarkMode(!darkMode)} 
@@ -422,6 +486,15 @@ export default function App() {
           )}
         </aside>
       </main>
+      
+      {/* 🔹 Heuristic: Undo Toast */}
+      {showToast && (
+          <div className="toast-notification" role="status">
+              <p>Removed from favorites</p>
+              <button onClick={handleUndo} className="btn-undo">Undo</button>
+          </div>
+      )}
+
       <footer style={{ textAlign: "center", padding: "1rem", marginTop: "2rem" }}>
         <p>&copy; 2024 MoodTunes</p>
       </footer>

@@ -42,7 +42,7 @@ describe('App Component', () => {
             const input = screen.getByPlaceholderText(/Search artists or songs/i);
             fireEvent.change(input, { target: { value: 'Query' } });
             // Use precise name to avoid matching "Clear search"
-            fireEvent.click(screen.getByRole('button', { name: /^Search$/i }));
+            fireEvent.click(screen.getByRole('button', { name: /Search Music/i }));
 
             await waitFor(() => {
                 expect(screen.getByText('Song A')).toBeInTheDocument();
@@ -54,7 +54,7 @@ describe('App Component', () => {
             global.fetch.mockResolvedValueOnce({ json: async () => ({ results: [] }) });
             render(<App />);
             fireEvent.change(screen.getByPlaceholderText(/Search/i), { target: { value: 'None' } });
-            fireEvent.click(screen.getByRole('button', { name: /^Search$/i }));
+            fireEvent.click(screen.getByRole('button', { name: /Search Music/i }));
             
             await waitFor(() => {
                 expect(screen.getByText(/No results found/i)).toBeInTheDocument();
@@ -76,7 +76,8 @@ describe('App Component', () => {
             vi.useFakeTimers();
             const mockSugg = {
                 results: [
-                    { trackId: 10, trackName: 'Sugg 1', artistName: 'Art 1', artworkUrl60: 'img' }
+                    { trackId: 10, trackName: 'Sugg 1', artistName: 'Art 1', artworkUrl60: 'img' },
+                    { trackId: 11, trackName: 'Sugg 2', artistName: 'Art 2', artworkUrl60: 'img' }
                 ]
             };
             
@@ -89,16 +90,30 @@ describe('App Component', () => {
             fireEvent.change(input, { target: { value: 'Sugg' } });
 
             vi.advanceTimersByTime(300);
-            
-            // Advance promises for fetch
-             vi.useRealTimers(); // Switch back to allow waitFor to work naturally
+            vi.useRealTimers();
 
             await waitFor(() => {
                  expect(screen.getByText('Sugg 1')).toBeInTheDocument();
             });
             
-            // Click
-            fireEvent.click(screen.getByText('Sugg 1'));
+            // Test Keyboard Navigation
+            fireEvent.keyDown(input, { key: 'ArrowDown', code: 'ArrowDown' });
+            
+            // Sugg 1 should be focused (aria-selected=true)
+            const option1 = screen.getByText('Sugg 1').closest('li');
+            expect(option1).toHaveAttribute('aria-selected', 'true');
+            
+            fireEvent.keyDown(input, { key: 'ArrowDown', code: 'ArrowDown' });
+            const option2 = screen.getByText('Sugg 2').closest('li');
+            expect(option2).toHaveAttribute('aria-selected', 'true');
+            expect(option1).toHaveAttribute('aria-selected', 'false');
+
+            fireEvent.keyDown(input, { key: 'ArrowUp', code: 'ArrowUp' });
+            expect(option1).toHaveAttribute('aria-selected', 'true');
+            
+            // Enter to select
+            fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+            
              await waitFor(() => {
                  expect(input.value).toContain('Sugg 1');
             });
@@ -126,7 +141,7 @@ describe('App Component', () => {
             render(<App />);
             fireEvent.change(screen.getByPlaceholderText(/Search/i), { target: { value: 'F' } });
             // fireEvent.keyDown(screen.getByPlaceholderText(/Search/i), { key: 'Enter', code: 'Enter' });
-            fireEvent.click(screen.getByRole('button', { name: /^Search$/i }));
+            fireEvent.click(screen.getByRole('button', { name: /Search Music/i }));
 
             await waitFor(() => expect(screen.getByText('FaveMe')).toBeInTheDocument());
 
@@ -157,7 +172,7 @@ describe('App Component', () => {
             
             render(<App />);
             fireEvent.change(screen.getByPlaceholderText(/Search/i), { target: { value: 'Lots' } });
-            fireEvent.click(screen.getByRole('button', { name: /^Search$/i }));
+            fireEvent.click(screen.getByRole('button', { name: /Search Music/i }));
 
             await waitFor(() => expect(screen.getByText('Song 0')).toBeInTheDocument());
             expect(screen.queryByText('Song 14')).not.toBeInTheDocument(); // Page 1 has 12 items (0-11)

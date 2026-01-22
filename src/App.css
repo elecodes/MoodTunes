@@ -743,3 +743,52 @@ button:active {
   content: "-";
   margin-right: 8px;
 }
+/* --- Toast Notification (Undo) --- */
+.toast-notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: var(--text-primary); /* Inverted context */
+  color: var(--bg-surface);
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 2000;
+  animation: slideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  font-weight: 500;
+}
+
+.toast-notification button.btn-undo {
+  background: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toast-notification button.btn-undo:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-theme='dark'] .toast-notification {
+  background-color: #F8FAFC;
+  color: #0F172A;
+}
