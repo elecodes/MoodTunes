@@ -1,7 +1,11 @@
 import "./App.css";
-import { useState, useEffect, useRef } from "react";
-import logo from "./assets/logo.png";
-// import MoodAssistant from "./components/MoodAssistant";
+import { useState, useEffect, useRef, Suspense, lazy } from "react";
+// import logo from "./assets/logo.png"; // Moved to Header
+
+// 🔹 Code Splitting: Lazy Load Components
+const Header = lazy(() => import("./components/Header"));
+const SongsList = lazy(() => import("./components/SongsList")); // Main Content
+const Favorites = lazy(() => import("./components/Favorites")); // Sidebar
 
 // --- Componente principal ---
 export default function App() {
@@ -29,6 +33,13 @@ export default function App() {
   const start = (page - 1) * perPage;
   const end = start + perPage;
   const paginatedSongs = songs.slice(start, end);
+
+  // 🔹 Estado de paginación favoritos
+  const [favPage, setFavPage] = useState(1);
+  const favPerPage = 6;
+  const favStart = (favPage - 1) * favPerPage;
+  const favEnd = favStart + favPerPage;
+  const favPaginated = favorites.slice(favStart, favEnd);
 
   const [lastRemoved, setLastRemoved] = useState(null);
   const [showToast, setShowToast] = useState(false);
@@ -225,21 +236,39 @@ export default function App() {
   }
 
 
-  // --- Añadir / quitar favoritos ---
-  function toggleFavorite(song) {
-    const exists = favorites.find((f) => f.id === song.id);
-    if (exists) {
-      console.log("Removing favorite:", song.title);
+  // --- Añadir / quitar favoritos (Optimistic UI) ---
+  async function toggleFavorite(song) {
+    const isAdding = !favorites.find((f) => f.id === song.id);
+    const previousFavorites = [...favorites]; // Snapshot for rollback
+
+    // 1. Update UI Instantly (Optimistic)
+    if (!isAdding) {
+      // Removing
+      console.log("Removing favorite (Optimistic):", song.title);
       setFavorites(favorites.filter((f) => f.id !== song.id));
-      
-      // 🔹 Heuristic: User Control (Undo)
       setLastRemoved(song);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 5000); // 5s to undo
     } else {
-      console.log("Adding favorite:", song.title);
+      // Adding
+      console.log("Adding favorite (Optimistic):", song.title);
       setFavorites([...favorites, song]);
       setFavPage(1);
+    }
+
+    // 2. Perform Async Operation (Simulated)
+    try {
+        // await api.syncFavorites(newFavorites); // If we had a real backend
+        await new Promise((resolve, reject) => {
+            // Simulate random server error/network lag if needed for testing rollback
+            // if (Math.random() < 0.1) reject(new Error("Network Error"));
+            setTimeout(resolve, 50); 
+        });
+    } catch (error) {
+        console.error("Sync failed, rolling back UI", error);
+        // 3. Rollback on Error
+        setFavorites(previousFavorites);
+        alert("Failed to update favorites. Please try again."); // Feedback
     }
   }
 
@@ -287,204 +316,50 @@ export default function App() {
       : { background: moodVar };
   };
   
-  // 🔹 Estado de paginación favoritos
-  const [favPage, setFavPage] = useState(1);
-  const favPerPage = 6;
-  const favStart = (favPage - 1) * favPerPage;
-  const favEnd = favStart + favPerPage;
-  const favPaginated = favorites.slice(favStart, favEnd);
-
   return (
     <div className="app" style={getBackgroundStyle()}>
-      <header>
-        <h1>
-          <img src={logo} alt="MoodTunes Logo" className="app-logo" />
-          MoodTunes
-        </h1>
-
-        {/* 🔹 BÚSQUEDA MANUAL */}
-        <div className="search-bar">
-          <div className="search-input-wrapper">
-             {/* 🔹 Accessibility: Explicit Label (Visually Hidden) */}
-            <label htmlFor="search-input" className="visually-hidden">Search artists or songs</label>
-            <input
-              id="search-input"
-              type="text"
-              placeholder="Search artists or songs..."
-              aria-label="Search artists or songs"
-              value={search}
-              onChange={(e) => {
-                  setSearch(e.target.value);
-                  setFocusedIndex(-1); // Reset focus on type
-              }}
-              onKeyDown={handleKeyDown}
-              onFocus={() => {
-                if (search.trim().length > 1) setShowSuggestions(true);
-              }}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} 
-            />
-            {search && (
-              <button 
-                className="btn-clear"
-                onClick={() => { setSearch(""); setSongs([]); }}
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            )}
-            {showSuggestions && suggestions.length > 0 && (
-              <ul className="suggestions-dropdown" role="listbox">
-                {suggestions.map((s, index) => (
-                  <li 
-                    key={s.id} 
-                    role="option"
-                    aria-selected={index === focusedIndex}
-                    className={index === focusedIndex ? "focused" : ""}
-                    onClick={() => selectSuggestion(s)}
-                    onMouseEnter={() => setFocusedIndex(index)}
-                  >
-                    <div>
-                      <strong>{s.title}</strong>
-                      <span>{s.author}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          {/* 🔹 Microcopy: Verbo + Sustantivo */}
-          <button onClick={() => { fetchSongs(search); setShowSuggestions(false); }} aria-label="Search Music">Search Music</button>
-        </div>
-          <div className="theme-switch-container" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <label htmlFor="theme-toggle" className="visually-hidden">Toggle Dark Mode</label>
-            <label className="theme-switch" aria-label="Toggle dark mode">
-              <input 
-                id="theme-toggle"
-                type="checkbox" 
-                checked={darkMode} 
-                onChange={() => setDarkMode(!darkMode)} 
-              />
-              <span className="slider">
-                <span className="icon-moon">🌙</span>
-                <span className="icon-sun">☀️</span>
-              </span>
-            </label>
-          </div>
-      </header>
+      <Suspense fallback={<div className="loading-overlay">Loading...</div>}>
+          <Header 
+            search={search}
+            setSearch={setSearch}
+            handleKeyDown={handleKeyDown}
+            setShowSuggestions={setShowSuggestions}
+            showSuggestions={showSuggestions}
+            suggestions={suggestions}
+            focusedIndex={focusedIndex}
+            setFocusedIndex={setFocusedIndex}
+            selectSuggestion={selectSuggestion}
+            fetchSongs={fetchSongs}
+            setSongs={setSongs}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+          />
+      </Suspense>
 
       <main>
-        {/* --- Resultados (Horizontal Scroll) --- */}
-        <section className="songs">
-          <h2>Results</h2>
-          <div className="grid">
+        <Suspense fallback={<div className="loading-skeleton">Loading Content...</div>}>
+            <SongsList 
+                loading={loading}
+                paginatedSongs={paginatedSongs}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                songs={songs}
+                page={page}
+                perPage={perPage}
+                setPage={setPage}
+            />
+        </Suspense>
 
-            {loading ? (
-              // Skeleton Loading State
-              Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="skeleton-card">
-                  <div className="skeleton-img"></div>
-                  <div className="skeleton-text"></div>
-                  <div className="skeleton-text short"></div>
-                </div>
-              ))
-            ) : (
-                <>
-                {paginatedSongs.length === 0 && <p style={{ padding: '0 1rem' }}>No results found.</p>}
-                {paginatedSongs.map((song) => {
-                  const isFav = favorites.find((f) => f.id === song.id);
-                  return (
-                    <div key={song.id} className="card">
-                      <img src={song.cover} alt={`Cover for ${song.title} by ${song.author}`} loading="lazy" />
-                      <h3>{song.title}</h3>
-                      <p>{song.author}</p>
-                      <p className="style">{song.style}</p>
-                      {song.preview && <audio controls src={song.preview} aria-label={`Listen preview of ${song.title}`} />}
-                      <button 
-                        className={`btn-favorite ${isFav ? 'active' : ''}`}
-                        onClick={() => toggleFavorite(song)}
-                        aria-label={isFav ? `Remove ${song.title} from favorites` : `Add ${song.title} to favorites`}
-                        style={{ 
-                          marginTop: '10px', 
-                          background: 'transparent', 
-                          border: 'none', 
-                          fontSize: '1.5rem',
-                          boxShadow: 'none',
-                          padding: '5px'
-                        }}
-                      >
-                        {isFav ? "❤️" : "🤍"}
-                      </button>
-                    </div>
-                  );
-                })}
-                </>
-            )}
-          </div>
-
-
-          {/* --- Paginación canciones --- */}
-          {songs.length > perPage && (
-            <div className="pagination">
-              <button disabled={page === 1} onClick={() => setPage(page - 1)}>
-                ⬅️ Previous
-              </button>
-              <span>
-                Page {page} of {Math.ceil(songs.length / perPage)}
-              </span>
-              <button
-                disabled={page === Math.ceil(songs.length / perPage)}
-                onClick={() => setPage(page + 1)}
-              >
-                Next ➡️
-              </button>
-            </div>
-          )}
-        </section>
-
-        {/* --- Favoritos --- */}
-        <aside className="favorites">
-          <h2>⭐ Favorites</h2>
-          {favorites.length === 0 && <p>No favorites yet.</p>}
-          <div className="grid">
-            {favPaginated.map((song) => (
-              <div key={song.id} className="card">
-                <img src={song.cover} alt={song.title} />
-                <h3>{song.title}</h3>
-                <p>{song.author}</p>
-                {song.preview && <audio controls src={song.preview} />}
-                <button 
-                    className="btn-remove"
-                    onClick={() => toggleFavorite(song)}
-                    aria-label={`Remove ${song.title} from favorites`}
-                    style={{ marginTop: '10px' }}
-                >
-                  ❌ Remove
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* --- Favorites Pagination --- */}
-          {favorites.length > favPerPage && (
-            <div className="pagination">
-              <button
-                disabled={favPage === 1}
-                onClick={() => setFavPage(favPage - 1)}
-              >
-                ⬅️ Previous
-              </button>
-              <span>
-                Page {favPage} of {Math.ceil(favorites.length / favPerPage)}
-              </span>
-              <button
-                disabled={favPage === Math.ceil(favorites.length / favPerPage)}
-                onClick={() => setFavPage(favPage + 1)}
-              >
-                Next ➡️
-              </button>
-            </div>
-          )}
-        </aside>
+        <Suspense fallback={<div className="loading-skeleton">Loading Favorites...</div>}>
+            <Favorites 
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                favPage={favPage}
+                favPerPage={favPerPage}
+                setFavPage={setFavPage}
+                favPaginated={favPaginated}
+            />
+        </Suspense>
       </main>
       
       {/* 🔹 Heuristic: Undo Toast */}
@@ -496,7 +371,7 @@ export default function App() {
       )}
 
       <footer style={{ textAlign: "center", padding: "1rem", marginTop: "2rem" }}>
-        <p>&copy; 2024 MoodTunes</p>
+        <p>@2025 MoodTunes by Elecodes</p>
       </footer>
     </div>
   );

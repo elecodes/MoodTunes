@@ -20,10 +20,12 @@ describe('App Component', () => {
         vi.useRealTimers();
     });
 
-    it('renders the main layout', () => {
+    it('renders the main layout', async () => {
         render(<App />);
-        expect(screen.getByRole('heading', { level: 1, name: /MoodTunes/i })).toBeInTheDocument();
-        expect(screen.getByText(/2024 MoodTunes/i)).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByRole('heading', { level: 1, name: /MoodTunes/i })).toBeInTheDocument();
+        });
+        expect(screen.getByText(/@2025 MoodTunes by Elecodes/i)).toBeInTheDocument();
         expect(screen.getByRole('checkbox')).toBeInTheDocument(); 
     });
 
@@ -39,7 +41,7 @@ describe('App Component', () => {
             });
 
             render(<App />);
-            const input = screen.getByPlaceholderText(/Search artists or songs/i);
+            const input = await screen.findByPlaceholderText(/Search artists or songs/i);
             fireEvent.change(input, { target: { value: 'Query' } });
             // Use precise name to avoid matching "Clear search"
             fireEvent.click(screen.getByRole('button', { name: /Search Music/i }));
@@ -73,7 +75,6 @@ describe('App Component', () => {
 
     describe('Autocomplete', () => {
         it('fetches and displays suggestions', async () => {
-            vi.useFakeTimers();
             const mockSugg = {
                 results: [
                     { trackId: 10, trackName: 'Sugg 1', artistName: 'Art 1', artworkUrl60: 'img' },
@@ -85,11 +86,18 @@ describe('App Component', () => {
             global.fetch.mockResolvedValue({ json: async () => mockSugg });
 
             render(<App />);
-            const input = screen.getByPlaceholderText(/Search/i);
+            // Wait for load first (real timers)
+            const input = await screen.findByPlaceholderText(/Search/i);
+            
+            // Now start fake timers for debounce testing
+            vi.useFakeTimers();
+            
             fireEvent.focus(input);
             fireEvent.change(input, { target: { value: 'Sugg' } });
 
             vi.advanceTimersByTime(300);
+            
+            // Switch back to allow waitFor to work normally
             vi.useRealTimers();
 
             await waitFor(() => {
@@ -121,9 +129,11 @@ describe('App Component', () => {
     });
 
     describe('Interactions', () => {
-        it('toggles dark mode', () => {
+        it('toggles dark mode', async () => {
             render(<App />);
-            const toggle = screen.getByRole('checkbox');
+            
+            const toggle = await screen.findByRole('checkbox'); // Wait for Header to load
+            
             fireEvent.click(toggle);
             expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
             fireEvent.click(toggle);
