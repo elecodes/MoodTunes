@@ -8,6 +8,11 @@ const SongsList = lazy(() => import("./components/SongsList")); // Main Content
 const Favorites = lazy(() => import("./components/Favorites")); // Sidebar
 
 // --- Componente principal ---
+/**
+ * Main Application Component.
+ * Manages global state (songs, favorites, search, theme) and renders the layout.
+ * @returns {JSX.Element} The rendered application.
+ */
 export default function App() {
   const [songs, setSongs] = useState([]); // canciones buscadas
   const [favorites, setFavorites] = useState([]); // lista de favoritos

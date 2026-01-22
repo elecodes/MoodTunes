@@ -1,3 +1,13 @@
+/**
+ * Sidebar component to display favorite songs.
+ * @param {Object} props
+ * @param {Array<Object>} props.favorites - Full list of favorite songs.
+ * @param {Function} props.toggleFavorite - Handler to remove Favorites.
+ * @param {number} props.favPage - Current page of favorites.
+ * @param {number} props.favPerPage - Items per favorites page.
+ * @param {Function} props.setFavPage - Page setter.
+ * @param {Array<Object>} props.favPaginated - Pre-calculated list of favorites for current page.
+ */
 export default function Favorites({ 
     favorites, 
     toggleFavorite, 

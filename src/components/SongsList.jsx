@@ -1,3 +1,15 @@
+/**
+ * Component to display grid of songs with searching/loading logic.
+ * @param {Object} props
+ * @param {boolean} props.loading - Loading state for showing skeletons.
+ * @param {Array<Object>} props.paginatedSongs - List of songs for the current page.
+ * @param {Array<Object>} props.favorites - List of favorite songs (to check status).
+ * @param {Function} props.toggleFavorite - Handler to toggle favorite status.
+ * @param {Array<Object>} props.songs - Full list of songs (for pagination calculation).
+ * @param {number} props.page - Current page number.
+ * @param {number} props.perPage - Number of items per page.
+ * @param {Function} props.setPage - State setter for current page.
+ */
 export default function SongsList({ 
     loading, 
     paginatedSongs, 

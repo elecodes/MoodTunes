@@ -1,6 +1,11 @@
 const ITUNES_BASE = "https://itunes.apple.com/search";
 
-// 🔹 Buscar canciones de un solo artista
+/**
+ * Fetches songs by a single artist from iTunes API.
+ * @param {string} artist - Name of the artist to search for.
+ * @param {number} [limit=20] - Max number of songs to return.
+ * @returns {Promise<Array<{title: string, author: string, style: string, preview: string|null, cover: string|null}>>} List of mapped song objects.
+ */
 export async function fetchSongsByArtist(artist, limit = 20) {
   try {
     const url = `${ITUNES_BASE}?term=${encodeURIComponent(
@@ -27,7 +32,12 @@ export async function fetchSongsByArtist(artist, limit = 20) {
   }
 }
 
-// 🔹 Buscar canciones de varios artistas
+/**
+ * Fetches songs for multiple artists sequentially.
+ * @param {string[]} artists - Array of artist names.
+ * @param {number} [limit=20] - Max songs per artist.
+ * @returns {Promise<Array<Object>>} Combined list of songs.
+ */
 export async function fetchSongsByArtists(artists, limit = 20) {
   let results = [];
   for (const artist of artists) {

@@ -1,5 +1,22 @@
 import logo from "../assets/logo.png";
 
+/**
+ * Header component containing logo, search bar, and theme toggle.
+ * @param {Object} props
+ * @param {string} props.search - Current search input value.
+ * @param {Function} props.setSearch - State setter for search input.
+ * @param {Function} props.handleKeyDown - Keyboard event handler for search input.
+ * @param {Function} props.setShowSuggestions - State setter for suggestions dropdown visibility.
+ * @param {boolean} props.showSuggestions - visibility of suggestion dropdown.
+ * @param {Array<Object>} props.suggestions - List of autocomplete suggestions.
+ * @param {number} props.focusedIndex - Index of currently highlighted suggestion.
+ * @param {Function} props.setFocusedIndex - State setter for focused index.
+ * @param {Function} props.selectSuggestion - Handler for clicking a suggestion.
+ * @param {Function} props.fetchSongs - Function to execute search.
+ * @param {Function} props.setSongs - State setter to clear songs (e.g. on clear search).
+ * @param {boolean} props.darkMode - Current theme state.
+ * @param {Function} props.setDarkMode - State setter for theme.
+ */
 export default function Header({ 
     search, 
     setSearch, 
