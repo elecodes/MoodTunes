@@ -49,7 +49,13 @@ The app uses the **official Voiceflow Widget** with a custom "Bridge" extension.
 This project uses **Vitest** and **React Testing Library** for unit and integration testing.
 
 -   **Run Tests**: `npm run test`
--   **Coverage**: The test suite covers:
+-   **Coverage**: `npm run test:coverage:check`
+    -   **Strategy**: "Honest Coverage 100/80/0"
+        -   **CORE** (`src/helpers`): 100% Coverage enforced.
+        -   **GLOBAL**: 80% Coverage enforced.
+        -   **INFRA**: 0% (Config files excluded).
+    -   **Quality Gate**: A Husky `pre-push` hook blocks code that does not meet these thresholds.
+-   **Scope**: The test suite covers:
     -   Component rendering (App, Footer).
     -   Search functionality (mocked API cycles).
     -   Security checks (input sanitization, URL encoding).
