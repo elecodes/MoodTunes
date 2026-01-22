@@ -1,3 +1,4 @@
+import "./App.css";
 import { APP_CONFIG } from "./constants/appConfig";
 import { musicService } from "./services/musicService";
 import { useState, useEffect, useRef, Suspense, lazy } from "react";
