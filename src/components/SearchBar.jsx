@@ -1,4 +1,4 @@
-import { fetchSongsByArtists } from "../helpers/api";
+import { musicService } from "../services/musicService";
 
 function SearchBar({ setSongs }) {
   const handleSearch = async (e) => {
@@ -14,7 +14,7 @@ function SearchBar({ setSongs }) {
 
     console.log("🔍 Buscando canciones de:", artists);
 
-    const allSongs = await fetchSongsByArtists(artists, 10); // 🔹 10 por artista
+    const allSongs = await musicService.getSongsByArtists(artists); 
     console.log("✅ Canciones recibidas:", allSongs);
 
     setSongs(allSongs);

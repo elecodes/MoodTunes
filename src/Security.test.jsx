@@ -17,11 +17,12 @@ describe('Security & Input Sanitization', () => {
 
     // Mock empty response
     global.fetch.mockResolvedValueOnce({
-        json: async () => ({ results: [] })
+        json: async () => ({ results: [] }),
+        ok: true
     });
 
     render(<App />);
-    const input = screen.getByPlaceholderText(/Search artists or songs.../i);
+    const input = await screen.findByPlaceholderText(/Search artists or songs.../i); // Async wait for Header
     const button = screen.getByRole('button', { name: /Search/i });
 
     fireEvent.change(input, { target: { value: longInput } });
@@ -41,11 +42,12 @@ describe('Security & Input Sanitization', () => {
 
     // Mock empty response
     global.fetch.mockResolvedValueOnce({
-        json: async () => ({ results: [] })
+        json: async () => ({ results: [] }),
+        ok: true
     });
 
     render(<App />);
-    const input = screen.getByPlaceholderText(/Search artists or songs.../i);
+    const input = await screen.findByPlaceholderText(/Search artists or songs.../i); // Async wait for Header
     const button = screen.getByRole('button', { name: /Search/i });
 
     fireEvent.change(input, { target: { value: maliciousInput } });

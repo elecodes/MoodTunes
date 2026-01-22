@@ -1,15 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SearchBar from './SearchBar';
-import * as api from '../helpers/api';
+import { musicService } from '../services/musicService';
 
-vi.mock('../helpers/api');
+vi.mock('../services/musicService', () => ({
+    musicService: {
+        getSongsByArtists: vi.fn()
+    }
+}));
 
 describe('SearchBar', () => {
-    it('should call fetchSongsByArtists and setSongs on submit', async () => {
+    it('should call getSongsByArtists and setSongs on submit', async () => {
         const setSongs = vi.fn();
         const mockSongs = [{ title: 'Song 1' }];
-        vi.spyOn(api, 'fetchSongsByArtists').mockResolvedValue(mockSongs);
+        musicService.getSongsByArtists.mockResolvedValue(mockSongs);
 
         render(<SearchBar setSongs={setSongs} />);
 
@@ -19,14 +23,14 @@ describe('SearchBar', () => {
         fireEvent.click(screen.getByText('Buscar'));
 
         await waitFor(() => {
-            expect(api.fetchSongsByArtists).toHaveBeenCalledWith(['Artist 1', 'Artist 2'], 10);
+            expect(musicService.getSongsByArtists).toHaveBeenCalledWith(['Artist 1', 'Artist 2']);
             expect(setSongs).toHaveBeenCalledWith(mockSongs);
         });
     });
 
     it('should filter empty inputs', async () => {
         const setSongs = vi.fn();
-        api.fetchSongsByArtists.mockResolvedValue([]);
+        musicService.getSongsByArtists.mockResolvedValue([]);
         render(<SearchBar setSongs={setSongs} />);
 
         const input = screen.getByPlaceholderText(/Introduce artistas/i);
@@ -34,7 +38,7 @@ describe('SearchBar', () => {
         fireEvent.click(screen.getByText('Buscar'));
 
         await waitFor(() => {
-            expect(api.fetchSongsByArtists).toHaveBeenCalledWith(['Artist 1'], 10);
+            expect(musicService.getSongsByArtists).toHaveBeenCalledWith(['Artist 1']);
         });
     });
 });

@@ -1,6 +1,6 @@
-import "./App.css";
+import { APP_CONFIG } from "./constants/appConfig";
+import { musicService } from "./services/musicService";
 import { useState, useEffect, useRef, Suspense, lazy } from "react";
-// import logo from "./assets/logo.png"; // Moved to Header
 
 // 🔹 Code Splitting: Lazy Load Components
 const Header = lazy(() => import("./components/Header"));
@@ -34,14 +34,14 @@ export default function App() {
 
   // 🔹 Estado de paginación
   const [page, setPage] = useState(1);
-  const perPage = 12;
+  const perPage = APP_CONFIG.PAGINATION.ITEMS_PER_PAGE;
   const start = (page - 1) * perPage;
   const end = start + perPage;
   const paginatedSongs = songs.slice(start, end);
 
   // 🔹 Estado de paginación favoritos
   const [favPage, setFavPage] = useState(1);
-  const favPerPage = 6;
+  const favPerPage = APP_CONFIG.PAGINATION.FAV_ITEMS_PER_PAGE;
   const favStart = (favPage - 1) * favPerPage;
   const favEnd = favStart + favPerPage;
   const favPaginated = favorites.slice(favStart, favEnd);
@@ -114,7 +114,7 @@ export default function App() {
         setSuggestions([]);
         setShowSuggestions(false);
       }
-    }, 300);
+    }, APP_CONFIG.UI.DEBOUNCE_DELAY_MS);
 
     return () => clearTimeout(delayDebounceFn);
   }, [search]);
@@ -123,14 +123,9 @@ export default function App() {
   async function fetchSuggestions(query) {
     if (!query) return;
     try {
-      const res = await fetch(
-        `https://itunes.apple.com/search?term=${encodeURIComponent(
-          query
-        )}&media=music&entity=song&limit=10`
-      );
-      const data = await res.json();
+      const rawResults = await musicService.getSuggestions(query);
       
-      const rawResults = data.results.map((track) => ({
+      const mappedResults = rawResults.map((track) => ({
         id: track.trackId,
         title: track.trackName,
         author: track.artistName,
@@ -141,7 +136,7 @@ export default function App() {
       const uniqueResults = [];
       const seen = new Set();
 
-      for (const r of rawResults) {
+      for (const r of mappedResults) {
         const key = `${r.title.toLowerCase()}-${r.author.toLowerCase()}`;
         if (!seen.has(key)) {
           seen.add(key);
@@ -157,6 +152,7 @@ export default function App() {
   }
 
   // --- Buscar canciones en iTunes (manual o desde el agent) ---
+  // --- Buscar canciones en iTunes (manual o desde el agent) ---
   async function fetchSongs(query) {
     if (typeof query !== 'string') return;
     const sanitizedQuery = query.trim().slice(0, 100);
@@ -166,23 +162,7 @@ export default function App() {
     setSongs([]); 
 
     try {
-      const res = await fetch(
-        `https://itunes.apple.com/search?term=${encodeURIComponent(
-          sanitizedQuery
-        )}&media=music&entity=song&limit=50`
-      );
-
-      const data = await res.json();
-
-      const results = data.results.map((track) => ({
-        id: track.trackId,
-        title: track.trackName,
-        author: track.artistName,
-        style: track.primaryGenreName || "Unknown",
-        cover: track.artworkUrl100,
-        preview: track.previewUrl,
-      }));
-
+      const results = await musicService.searchSongs(sanitizedQuery);
       setSongs(results);
       setPage(1);
     } catch (error) {
@@ -253,7 +233,7 @@ export default function App() {
       setFavorites(favorites.filter((f) => f.id !== song.id));
       setLastRemoved(song);
       setShowToast(true);
-      setTimeout(() => setShowToast(false), 5000); // 5s to undo
+      setTimeout(() => setShowToast(false), APP_CONFIG.UI.TOAST_DURATION_MS); // 5s to undo
     } else {
       // Adding
       console.log("Adding favorite (Optimistic):", song.title);

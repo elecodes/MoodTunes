@@ -37,7 +37,8 @@ describe('App Component', () => {
                 ]
             };
             global.fetch.mockResolvedValueOnce({
-                json: async () => mockData
+                json: async () => mockData,
+                ok: true
             });
 
             render(<App />);
@@ -53,7 +54,7 @@ describe('App Component', () => {
         });
 
         it('handles no results', async () => {
-            global.fetch.mockResolvedValueOnce({ json: async () => ({ results: [] }) });
+            global.fetch.mockResolvedValueOnce({ json: async () => ({ results: [] }), ok: true });
             render(<App />);
             fireEvent.change(screen.getByPlaceholderText(/Search/i), { target: { value: 'None' } });
             fireEvent.click(screen.getByRole('button', { name: /Search Music/i }));
@@ -146,7 +147,7 @@ describe('App Component', () => {
                     { trackId: 1, trackName: 'FaveMe', artistName: 'Artist F', id: 1, artworkUrl100: 'u' }
                 ]
             };
-            global.fetch.mockResolvedValue({ json: async () => mockData });
+            global.fetch.mockResolvedValue({ json: async () => mockData, ok: true });
 
             render(<App />);
             fireEvent.change(screen.getByPlaceholderText(/Search/i), { target: { value: 'F' } });
@@ -178,7 +179,7 @@ describe('App Component', () => {
                     trackId: i, trackName: `Song ${i}`, artistName: 'A', primaryGenreName: 'P', artworkUrl100: 'u'
                 }))
             };
-            global.fetch.mockResolvedValue({ json: async () => mockData });
+            global.fetch.mockResolvedValue({ json: async () => mockData, ok: true });
             
             render(<App />);
             fireEvent.change(screen.getByPlaceholderText(/Search/i), { target: { value: 'Lots' } });
@@ -195,7 +196,7 @@ describe('App Component', () => {
     describe('Voiceflow Bridge', () => {
         it('accepts songs from window', async () => {
              const mockData = { results: [{ trackId: 9, trackName: 'VF', artistName: 'VF'}] };
-             global.fetch.mockResolvedValue({ json: async () => mockData });
+             global.fetch.mockResolvedValue({ json: async () => mockData, ok: true });
              
              render(<App />);
              
@@ -214,7 +215,7 @@ describe('App Component', () => {
          it('accepts array from window', async () => {
              const mockSearch = { results: [{ trackId: 9, trackName: 'VF', artistName: 'VF', artworkUrl100: 'u'}] };
              // Mock fetchItunesTrack calls
-             global.fetch.mockResolvedValue({ json: async () => mockSearch });
+             global.fetch.mockResolvedValue({ json: async () => mockSearch, ok: true });
              
              render(<App />);
              
