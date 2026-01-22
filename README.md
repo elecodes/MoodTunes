@@ -67,6 +67,14 @@ This project uses **Vitest** and **React Testing Library** for unit and integrat
     -   Search functionality (mocked API cycles).
     -   Security checks (input sanitization, URL encoding).
 
+### Performance Engineering
+-   **Code Splitting**: Application is split into chunks (`Header`, `SongsList`, `Favorites`) using `React.lazy` and `Suspense`.
+-   **Optimistic UI**: Favorites toggle provides instant feedback (<100ms) with error-rollback safety.
+-   **Core Web Vitals**: Zero CLS (Cumulative Layout Shift) enforced via explicit image aspect ratios.
+
+### Documentation
+-   **JSDoc**: Comprehensive JSDoc comments implemented for all Core Helpers (`src/helpers`) and Components, ensuring strict typing and IntelliSense support.
+
 ### Security Measures (OWASP Top 10)
 -   **Content Security Policy (CSP)**: Implemented in `index.html` to restrict resource sources.
 -   **Input Sanitization**: Search queries are truncated and encoded to prevent XSS and Injection attacks.
