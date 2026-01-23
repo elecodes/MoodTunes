@@ -24,6 +24,8 @@ Users can discover music either by searching manually or by chatting with the AI
 ## Technology Stack
 
 -   **Frontend**: React, Vite
+-   **Backend**: Node.js, Express, Helmet (Security)
+-   **Authentication**: JWT, Bcrypt, Zod (In-Memory Store)
 -   **AI**: Voiceflow (Official Widget + Custom Bridge)
 -   **API**: iTunes Search API
 -   **Styling**: Pure CSS
@@ -35,12 +37,18 @@ Users can discover music either by searching manually or by chatting with the AI
     npm install
     ```
 
-2.  **Run Development Server**:
+2.  **Start the Backend Server (Port 3001)**:
+    ```bash
+    npm run server
+    ```
+    *Note: The server handles Authentication and Security logic.*
+
+3.  **Start the Frontend (Port 5173)**:
     ```bash
     npm run dev
     ```
 
-3.  **Open in Browser**:
+4.  **Open in Browser**:
     Navigate to `http://localhost:5173`.
 
 ## Voiceflow Integration

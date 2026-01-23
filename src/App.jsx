@@ -7,6 +7,7 @@ import { useState, useEffect, useRef, Suspense, lazy } from "react";
 const Header = lazy(() => import("./components/Header"));
 const SongsList = lazy(() => import("./components/SongsList")); // Main Content
 const Favorites = lazy(() => import("./components/Favorites")); // Sidebar
+const AuthForm = lazy(() => import("./components/AuthForm/AuthForm")); // lazy load AuthForm
 
 // --- Componente principal ---
 /**
@@ -17,6 +18,14 @@ const Favorites = lazy(() => import("./components/Favorites")); // Sidebar
 export default function App() {
   const [songs, setSongs] = useState([]); // canciones buscadas
   const [favorites, setFavorites] = useState([]); // lista de favoritos
+  
+  const [showAuth, setShowAuth] = useState(false); // Toggle for Auth verification
+  const [user, setUser] = useState(null); // { username, email, token }
+
+  const handleLogout = () => {
+      setUser(null);
+      alert("Logged out successfully.");
+  };
 
   const [search, setSearch] = useState(""); // búsqueda manual
   const [loading, setLoading] = useState(false); // Loading state for UX
@@ -323,29 +332,77 @@ export default function App() {
       </Suspense>
 
       <main>
-        <Suspense fallback={<div className="loading-skeleton">Loading Content...</div>}>
-            <SongsList 
-                loading={loading}
-                paginatedSongs={paginatedSongs}
-                favorites={favorites}
-                toggleFavorite={toggleFavorite}
-                songs={songs}
-                page={page}
-                perPage={perPage}
-                setPage={setPage}
-            />
-        </Suspense>
+        {showAuth && !user ? (
+             <Suspense fallback={<div className="loading-overlay">Loading Auth...</div>}>
+                 <div className="auth-overlay">
+                    <div className="auth-wrapper">
+                         {/* Optional Back Button within overlay context if needed, or click outside to close */}
+                         <button 
+                            onClick={() => setShowAuth(false)}
+                            style={{ 
+                                position: 'absolute', top: '20px', right: '20px', 
+                                background: 'rgba(255,255,255,0.2)', border: 'none', 
+                                color: 'white', padding: '8px 16px', borderRadius: '20px',
+                                cursor: 'pointer', backdropFilter: 'blur(4px)'
+                            }}
+                         >
+                            ✕ Close
+                         </button>
+                         <AuthForm onSubmit={(userData) => {
+                             console.log("Auth Success:", userData);
+                             setUser(userData); // Store user
+                             setShowAuth(false); // Close modal
+                         }} />
+                    </div>
+                 </div>
+             </Suspense>
+        ) : (
+        <>
+        {user ? (
+            <div style={{ gridColumn: '1 / -1', marginBottom: '1rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
+                <span style={{ fontSize: '1.2rem', fontWeight: '500' }}>👋 Welcome, <strong>{user.username}</strong></span>
+                <button 
+                    onClick={handleLogout}
+                    style={{ padding: '0.4rem 0.8rem', background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                    Logout
+                </button>
+            </div>
+        ) : (
+             <div style={{ gridColumn: '1 / -1', marginBottom: '1rem', textAlign: 'center' }}>
+                <button 
+                    onClick={() => setShowAuth(true)}
+                    className="auth-trigger-btn"
+                >
+                    Login / Register
+                </button>
+            </div>
+        )}
+            <Suspense fallback={<div className="loading-skeleton">Loading Content...</div>}>
+                <SongsList 
+                    loading={loading}
+                    paginatedSongs={paginatedSongs}
+                    favorites={favorites}
+                    toggleFavorite={toggleFavorite}
+                    songs={songs}
+                    page={page}
+                    perPage={perPage}
+                    setPage={setPage}
+                />
+            </Suspense>
 
-        <Suspense fallback={<div className="loading-skeleton">Loading Favorites...</div>}>
-            <Favorites 
-                favorites={favorites}
-                toggleFavorite={toggleFavorite}
-                favPage={favPage}
-                favPerPage={favPerPage}
-                setFavPage={setFavPage}
-                favPaginated={favPaginated}
-            />
-        </Suspense>
+            <Suspense fallback={<div className="loading-skeleton">Loading Favorites...</div>}>
+                <Favorites 
+                    favorites={favorites}
+                    toggleFavorite={toggleFavorite}
+                    favPage={favPage}
+                    favPerPage={favPerPage}
+                    setFavPage={setFavPage}
+                    favPaginated={favPaginated}
+                />
+            </Suspense>
+        </>
+        )}
       </main>
       
       {/* 🔹 Heuristic: Undo Toast */}

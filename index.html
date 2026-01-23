@@ -4,24 +4,35 @@
 <head>
   <style>
     /* Force Voiceflow Widget to Top Right */
-    /* Force Voiceflow Widget to Top Right */
     #voiceflow-chat,
     .vfrc-widget,
     .vfrc-launcher {
       position: fixed !important;
       bottom: auto !important;
-      top: 100px !important;
-      right: 20px !important;
+      top: 90px !important;
+      /* Just below header */
+      right: 24px !important;
       left: auto !important;
       z-index: 99999 !important;
       transform-origin: top right !important;
+    }
+
+    /* Ensure the chat window opens downwards from the launcher */
+    .vfrc-chat {
+      bottom: auto !important;
+      top: 80px !important;
+      /* Align with launcher */
+      right: 24px !important;
+      left: auto !important;
+      max-height: 600px !important;
+      margin-bottom: 0 !important;
     }
   </style>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' 'unsafe-inline' blob: https://cdn.voiceflow.com https://*.voiceflow.com; connect-src 'self' https://itunes.apple.com https://*.voiceflow.com https://general-runtime.voiceflow.com wss://*.voiceflow.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://cdn.voiceflow.com https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://*.voiceflow.com; media-src 'self' blob: https://*.itunes.apple.com https://audio-ssl.itunes.apple.com https://*.mzstatic.com;">
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' blob: https://cdn.voiceflow.com https://*.voiceflow.com; connect-src 'self' http://localhost:3001 ws://localhost:3001 https://itunes.apple.com https://*.voiceflow.com https://general-runtime.voiceflow.com wss://*.voiceflow.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://cdn.voiceflow.com https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://*.voiceflow.com; media-src 'self' blob: https://*.itunes.apple.com https://audio-ssl.itunes.apple.com https://*.mzstatic.com;">
   <title>MoodTunes</title>
 
   <!-- 🔹 Contenedor React -->
